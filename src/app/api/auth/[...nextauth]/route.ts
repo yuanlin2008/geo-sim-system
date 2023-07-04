@@ -11,7 +11,12 @@ export const Options:AuthOptions = {
 			clientSecret:process.env.GITHUB_CLIENT_SECRET as string,
 		}),
 	],
-	adapter: PrismaAdapter
+	session:{
+		strategy:"database",
+	},
+	adapter: PrismaAdapter(prisma),
 }
 
-export default NextAuth(Options);
+const handler = NextAuth(Options);
+
+export {handler as GET, handler as POST};
