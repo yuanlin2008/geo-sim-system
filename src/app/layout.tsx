@@ -1,7 +1,18 @@
 import './globals.css'
-import { Inter } from 'next/font/google'
+import { Noto_Sans_SC, Noto_Serif_SC, Liu_Jian_Mao_Cao } from 'next/font/google'
 import ClientSessionProvider from "@/components/session-provider"
-const inter = Inter({ subsets: ['latin'] })
+
+const fontSans = Noto_Sans_SC({
+  subsets:["latin"],
+  weight:["100", "500", "900"],
+  variable: "--font-sans",
+})
+
+const fontSerif = Noto_Serif_SC({
+  subsets:["latin"],
+  weight:["200", "500", "900"],
+  variable: "--font_serif",
+})
 
 export const metadata = {
   title: 'App',
@@ -10,8 +21,8 @@ export const metadata = {
 
 function Header() {
   return (
-    <nav className="relative container mx-auto p-6 bg-gray-100">
-      Hello
+    <nav className="relative container mx-auto p-6 bg-gray-100 text-xl">
+      地缘模拟系统
     </nav>
   )
 }
@@ -19,7 +30,7 @@ function Header() {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={fontSans.variable}>
         <ClientSessionProvider>
           <Header />
           {children}

@@ -9,7 +9,6 @@ export const config = {
 export default withAuth(
   async function middleware(req) {
     const token = req.nextauth.token
-    console.log(token)
     if (!token) {
       return NextResponse.redirect(new URL("/", req.url))
     }
