@@ -45,6 +45,9 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  /// Is Adnim
+  isAdmin       Boolean?
 }
 
 model VerificationToken {

@@ -1,8 +1,8 @@
-import prisma from "@/lib/prisma";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { NextAuthOptions } from "next-auth";
-import NextAuth from "next-auth/next";
-import GithubProvider from "next-auth/providers/github";
+import prisma from "@/lib/prisma"
+import { PrismaAdapter } from "@next-auth/prisma-adapter"
+import { NextAuthOptions } from "next-auth"
+import NextAuth from "next-auth/next"
+import GithubProvider from "next-auth/providers/github"
 
 const authOptions:NextAuthOptions = {
 	providers:[
@@ -12,11 +12,30 @@ const authOptions:NextAuthOptions = {
 		}),
 	],
 	session:{
-		strategy:"database",
+		strategy:"jwt",
 	},
 	adapter: PrismaAdapter(prisma),
+	pages:{
+		//signIn:"/login",
+	},
+	callbacks:{
+		async jwt({token, user}) {
+			if(user) {
+				token.id = user.id
+				token.isAdmin = user.isAdmin
+			}
+			return token
+		},
+		async session({ session, token, user}){
+			if(token){
+				session.user.id = token.id
+				session.user.isAdmin = token.isAdmin
+			}
+			return session
+		},
+	},
 }
 
-const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions)
 
-export {handler as GET, handler as POST};
+export {handler as GET, handler as POST}
