@@ -31,6 +31,7 @@ function Header() {
       地缘模拟系统
     </nav>
   )
+
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
