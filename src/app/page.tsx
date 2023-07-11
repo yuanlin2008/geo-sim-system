@@ -7,7 +7,9 @@ export default function Home() {
   const { data: session } = useSession()
   return (
     <div>
-      <button onClick={() => signIn()}>{session ? "Signout" : "Signin"}</button>
+      <button className="btn-neutral btn" onClick={() => signIn()}>
+        {session ? "Signout" : "Signin"}
+      </button>
       <Link href="/test">test</Link>
     </div>
   )
