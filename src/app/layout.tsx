@@ -29,10 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={clsx([FontMaoCao.variable, FontXing.variable])}>
-      <body className="font-xing">
-        哈韩的开发完了看见分厘卡我就发了
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   )
 }
