@@ -45,7 +45,8 @@ const Login = () => {
   }
   return (
     <div className="item-center flex min-h-screen flex-col justify-center space-y-6">
-      <h1 className="text-center font-xing text-6xl text-primary-content">
+      <AppConfig.logo size={80} className="mx-auto" />
+      <h1 className="text-center text-4xl text-primary-content">
         {AppConfig.appName}
       </h1>
       <p className="text-center text-2xl font-bold">请登录您的账号</p>

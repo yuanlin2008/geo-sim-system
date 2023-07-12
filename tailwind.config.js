@@ -7,10 +7,7 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        mao: ["var(--font_mao)"],
-        xing: ["var(--font_xing)"],
-      },
+      fontFamily: {},
     },
   },
   plugins: [require("daisyui")],
