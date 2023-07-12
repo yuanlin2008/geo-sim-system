@@ -47,10 +47,8 @@ const Login = () => {
     <div className="min-h-screen">
       <div className="item-center mx-auto flex min-h-screen w-64 flex-col justify-center ">
         <AppConfig.logo size={80} className="mx-auto" />
-        <h1 className="mx-auto my-5 text-4xl text-primary-content">
-          {AppConfig.appName}
-        </h1>
-        <p className="mx-auto text-2xl font-bold">请登录您的账号</p>
+        <h1 className="mx-auto my-5 text-4xl font-bold">{AppConfig.appName}</h1>
+        <p className="mx-auto font-bold">请登录您的账号</p>
         <form className="form-control " action="">
           <label className="label" htmlFor="">
             用户名

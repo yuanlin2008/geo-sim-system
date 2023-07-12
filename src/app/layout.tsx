@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={clsx()}>
+    <html lang="en" data-theme="dark" className={clsx()}>
       <body>{children}</body>
     </html>
   )
