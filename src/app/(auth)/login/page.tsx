@@ -10,9 +10,9 @@ const Login = () => {
   function AuthLogin() {
     return (
       <>
-        <div className="divider mx-auto w-80">或者</div>
+        <div className="divider">或者</div>
         <button
-          className="btn-neutral btn-wide btn mx-auto"
+          className="btn-neutral btn-block btn mx-auto"
           disabled={isLoading}
           onClick={() => {
             setIsLoading(true)
@@ -44,13 +44,29 @@ const Login = () => {
     )
   }
   return (
-    <div className="item-center flex min-h-screen flex-col justify-center space-y-6">
-      <AppConfig.logo size={80} className="mx-auto" />
-      <h1 className="text-center text-4xl text-primary-content">
-        {AppConfig.appName}
-      </h1>
-      <p className="text-center text-2xl font-bold">请登录您的账号</p>
-      <AuthLogin />
+    <div className="min-h-screen">
+      <div className="item-center mx-auto flex min-h-screen w-64 flex-col justify-center ">
+        <AppConfig.logo size={80} className="mx-auto" />
+        <h1 className="mx-auto my-5 text-4xl text-primary-content">
+          {AppConfig.appName}
+        </h1>
+        <p className="mx-auto text-2xl font-bold">请登录您的账号</p>
+        <form className="form-control " action="">
+          <label className="label" htmlFor="">
+            用户名
+          </label>
+          <input className="input-bordered input input-sm w-full" type="text" />
+          <label className="label" htmlFor="">
+            密码
+          </label>
+          <input
+            className="input-bordered input input-sm w-full"
+            type="password"
+          />
+          <button className="btn-primary btn-block btn mt-4">登录</button>
+        </form>
+        <AuthLogin />
+      </div>
     </div>
   )
 }
