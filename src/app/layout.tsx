@@ -1,8 +1,12 @@
-import "./globals.css"
+import "@fontsource/roboto/300.css"
+import "@fontsource/roboto/400.css"
+import "@fontsource/roboto/500.css"
+import "@fontsource/roboto/700.css"
 
 import { Metadata } from "next"
 import { AppConfig } from "@/config"
-import clsx from "clsx"
+
+import ThemeProvider from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: AppConfig.appName,
@@ -16,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" data-theme="dark" className={clsx()}>
-      <body>{children}</body>
+    <html lang="en">
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   )
 }

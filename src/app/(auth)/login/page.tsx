@@ -3,7 +3,14 @@
 import React from "react"
 import { AppConfig } from "@/config"
 import { zodResolver } from "@hookform/resolvers/zod"
-import clsx from "clsx"
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
+import Avatar from "@mui/material/Avatar"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 
@@ -13,7 +20,6 @@ const IconClasses = ["mr-2", "h-6", "w-6"]
 
 const GithubIcon = (
   <svg
-    className={clsx(IconClasses)}
     aria-hidden="true"
     focusable="false"
     data-prefix="fab"
@@ -34,54 +40,7 @@ const Login = () => {
   const [provider, setProvider] = React.useState<string | null>(null)
 
   // Credential Login
-  function CredLogin() {
-    const {
-      register,
-      handleSubmit,
-      formState: { errors },
-    } = useForm<UserLoginSchemaType>({ resolver: zodResolver(UserLoginSchema) })
-
-    async function onSubmit(data: UserLoginSchemaType) {
-      setIsLoading(true)
-      setProvider("credentials")
-      // todo
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 2000)
-    }
-
-    return (
-      <form className="form-control " onSubmit={handleSubmit(onSubmit)}>
-        <label className="label" htmlFor="">
-          用户名
-        </label>
-        <input
-          className="input-bordered input input-sm w-full"
-          type="text"
-          disabled={isLoading}
-          {...register("username")}
-        />
-        <label className="label" htmlFor="">
-          密码
-        </label>
-        <input
-          className="input-bordered input input-sm w-full"
-          type="password"
-          disabled={isLoading}
-          {...register("password")}
-        />
-        <button className="btn-primary btn-block btn mt-4" disabled={isLoading}>
-          {isLoading && provider == "credentials" ? (
-            <span
-              className={clsx("loading loading-spinner", IconClasses)}
-            ></span>
-          ) : (
-            "登录"
-          )}
-        </button>
-      </form>
-    )
-  }
+  function CredLogin() {}
 
   // Auth Login
   interface AuthLoginProps {
@@ -89,46 +48,54 @@ const Login = () => {
     text: string
     icon: React.ReactNode
   }
-  function AuthLogin(props: AuthLoginProps) {
-    return (
-      <>
-        <button
-          className="btn-neutral btn-block btn mx-auto"
-          disabled={isLoading}
-          onClick={() => {
-            setIsLoading(true)
-            setProvider(props.provider)
-            signIn(props.provider)
-          }}
-        >
-          {isLoading && provider == props.provider ? (
-            <span
-              className={clsx("loading loading-spinner", IconClasses)}
-            ></span>
-          ) : (
-            props.icon
-          )}
-          {props.text}
-        </button>
-      </>
-    )
-  }
+  function AuthLogin(props: AuthLoginProps) {}
 
   return (
-    <div className="min-h-screen">
-      <div className="item-center mx-auto flex min-h-screen w-64 flex-col justify-center ">
-        <AppConfig.logo size={80} className="mx-auto" />
-        <h1 className="mx-auto my-5 text-4xl font-bold">{AppConfig.appName}</h1>
-        <p className="mx-auto font-bold">请登录您的账号</p>
-        <CredLogin />
-        <div className="divider">或者</div>
-        <AuthLogin
-          provider="github"
-          text="使用github账号登录"
-          icon={GithubIcon}
+    <Box
+      sx={{
+        mt: 8,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Avatar sx={{ bgcolor: "secondary.main" }}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        登录
+      </Typography>
+      <Box component="form" onSubmit={() => {}} noValidate sx={{ mt: 1 }}>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="用户名"
+          name="email"
+          autoComplete="email"
+          autoFocus
         />
-      </div>
-    </div>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="密码"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+        />
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          sx={{ mt: 3, mb: 2 }}
+        >
+          登录
+        </Button>
+      </Box>
+    </Box>
   )
 }
 

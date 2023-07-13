@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { SessionProvider } from "next-auth/react"
+import * as NA from "next-auth/react"
 
-export default function ClientSessionProvider({
+export default function SessionProvider({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <SessionProvider>{children}</SessionProvider>
+  return <NA.SessionProvider>{children}</NA.SessionProvider>
 }
