@@ -7,8 +7,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import Avatar from "@mui/material/Avatar"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
-import Checkbox from "@mui/material/Checkbox"
-import FormControlLabel from "@mui/material/FormControlLabel"
+import Divider from "@mui/material/Divider"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 import { signIn } from "next-auth/react"
@@ -53,47 +52,67 @@ const Login = () => {
   return (
     <Box
       sx={{
-        mt: 8,
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <Avatar sx={{ bgcolor: "secondary.main" }}>
-        <LockOutlinedIcon />
-      </Avatar>
-      <Typography component="h1" variant="h5">
-        登录
+      <Box sx={{ my: 4 }}>
+        <Typography component="h1" variant="h3">
+          {AppConfig.appName}
+        </Typography>
+      </Box>
+      <Box sx={{ mb: 2 }}>
+        <Avatar>
+          <LockOutlinedIcon />
+        </Avatar>
+      </Box>
+      <Typography component="h2" variant="h5">
+        请登录您的账号
       </Typography>
-      <Box component="form" onSubmit={() => {}} noValidate sx={{ mt: 1 }}>
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="用户名"
-          name="email"
-          autoComplete="email"
-          autoFocus
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="password"
-          label="密码"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-        />
-        <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          sx={{ mt: 3, mb: 2 }}
+      <Box sx={{ mt: 1, maxWidth: 300 }}>
+        <Box
+          component="form"
+          onSubmit={() => {
+            console.log("hahahaha")
+          }}
+          noValidate
         >
-          登录
-        </Button>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="用户名"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            size="small"
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="密码"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            size="small"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            登录
+          </Button>
+        </Box>
+        <Divider>或者</Divider>
       </Box>
     </Box>
   )
