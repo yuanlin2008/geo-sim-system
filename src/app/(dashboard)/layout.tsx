@@ -1,4 +1,5 @@
 import React from "react"
+import { AppBar, Box, Toolbar, Typography } from "@mui/material"
 
 import { getServerUser } from "@/lib/auth"
 
@@ -9,9 +10,13 @@ export default async function Layout({
 }) {
   const user = await getServerUser()
   return (
-    <div>
-      <p>{JSON.stringify(user)}</p>
+    <Box>
+      <AppBar position="absolute">
+        <Toolbar>
+          <Typography variant="h5">{"hahahaha"}</Typography>
+        </Toolbar>
+      </AppBar>
       {children}
-    </div>
+    </Box>
   )
 }
