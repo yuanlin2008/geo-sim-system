@@ -1,12 +1,17 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { AppConfig } from "@/config"
 import PublicIcon from "@mui/icons-material/Public"
 import AppBar from "@mui/material/AppBar"
 import Avatar from "@mui/material/Avatar"
 import Box from "@mui/material/Box"
+import Divider from "@mui/material/Divider"
+import IconButton from "@mui/material/IconButton"
+import Menu from "@mui/material/Menu"
+import MenuItem from "@mui/material/MenuItem"
 import Toolbar from "@mui/material/Toolbar"
+import Tooltip from "@mui/material/Tooltip"
 import Typography from "@mui/material/Typography"
 import { signOut, useSession } from "next-auth/react"
 
@@ -14,10 +19,9 @@ import SessionProvider from "@/components/SessionProvider"
 
 interface Props {}
 
-function ToolBar_() {
-  const { data: session } = useSession()
+function Title() {
   return (
-    <Toolbar sx={{ flexWrap: "wrap" }}>
+    <>
       <PublicIcon />
       <Typography
         component="a"
@@ -31,13 +35,57 @@ function ToolBar_() {
       >
         {AppConfig.appName}
       </Typography>
+    </>
+  )
+}
+
+function User() {
+  const { data: session } = useSession()
+  const [anchor, setAnchor] = useState<null | HTMLElement>(null)
+  const handleMenuClose = () => {
+    setAnchor(null)
+  }
+  if (!session) return null
+  return (
+    <>
+      <Tooltip title={session.user.name}>
+        <IconButton
+          aria-label="user"
+          color="primary"
+          edge="start"
+          onClick={(e: React.MouseEvent<HTMLElement>) =>
+            setAnchor(e.currentTarget)
+          }
+        >
+          <Avatar
+            alt="User"
+            src={session.user.image as string}
+            sx={{ border: 1 }}
+          >
+            {session.user.name?.charAt(0)}
+          </Avatar>
+        </IconButton>
+      </Tooltip>
+      <Menu
+        id=""
+        anchorEl={anchor}
+        keepMounted
+        open={!!anchor}
+        onClose={() => setAnchor(null)}
+      >
+        <MenuItem onClick={() => signOut()}>Sign out</MenuItem>
+      </Menu>
+    </>
+  )
+}
+
+function ToolBar_() {
+  return (
+    <Toolbar sx={{ flexWrap: "wrap" }}>
+      <Title />
       <Box sx={{ flexGrow: 1 }} />
       <nav></nav>
-      {session && (
-        <Avatar alt="User" src={session.user.image as string}>
-          {session.user.name?.charAt(0)}
-        </Avatar>
-      )}
+      <User />
     </Toolbar>
   )
 }
