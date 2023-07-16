@@ -1,6 +1,6 @@
 import React from "react"
 
-import AppBar from "@/components/AppBar"
+import AppBar from "@/app/(protected)/AppBar"
 
 export default async function Layout({
   children,

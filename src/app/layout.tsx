@@ -6,7 +6,7 @@ import "@fontsource/roboto/700.css"
 import { Metadata } from "next"
 import { AppConfig } from "@/config"
 
-import ThemeProvider from "@/components/ThemeProvider"
+import ThemeProvider from "./ThemeProvider"
 
 export const metadata: Metadata = {
   title: AppConfig.appName,

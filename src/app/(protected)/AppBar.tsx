@@ -6,7 +6,6 @@ import PublicIcon from "@mui/icons-material/Public"
 import AppBar from "@mui/material/AppBar"
 import Avatar from "@mui/material/Avatar"
 import Box from "@mui/material/Box"
-import Divider from "@mui/material/Divider"
 import IconButton from "@mui/material/IconButton"
 import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
@@ -15,7 +14,7 @@ import Tooltip from "@mui/material/Tooltip"
 import Typography from "@mui/material/Typography"
 import { signOut, useSession } from "next-auth/react"
 
-import SessionProvider from "@/components/SessionProvider"
+import SessionProvider from "./SessionProvider"
 
 interface Props {}
 
