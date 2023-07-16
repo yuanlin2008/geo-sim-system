@@ -23,10 +23,12 @@ const Map = (props: Props) => {
     }
     // 初始化BMapGL
     const map = new BMapGL.Map(rootElem.current as any as HTMLElement)
+    map.centerAndZoom({ lng: 116.404449, lat: 39.914889 } as any, 1)
     mapRef.current = map as any
     setLoaded(true)
   }
   React.useEffect(() => {
+    console.log("effect")
     return () => {
       // 销毁BMapGL
       if (mapRef.current) {
@@ -36,6 +38,7 @@ const Map = (props: Props) => {
     }
   }, [])
 
+  console.log("render")
   return (
     <>
       <Script
@@ -51,9 +54,7 @@ const Map = (props: Props) => {
           callback=aaaa`
         }
       />
-      <Box ref={rootElem} sx={{ flex: "flex", height: "100%" }}>
-        {!loaded && <div>loading...</div>}
-      </Box>
+      <Box ref={rootElem} sx={{ flex: "flex", height: "100%" }}></Box>
     </>
   )
 }
