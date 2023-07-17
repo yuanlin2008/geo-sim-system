@@ -5,14 +5,8 @@ import Script from "next/script"
 import Box from "@mui/material/Box"
 import Progress from "@mui/material/CircularProgress"
 
-const MapContext = React.createContext<null | BMapGL.Map>(null)
-
-export function useMap() {
-  return React.useContext(MapContext)
-}
-
-interface Props {
-  children?: React.ReactNode
+type Props = {
+  onLoaded(map: BMapGL.Map): void
 }
 
 const Map = (props: Props) => {
@@ -27,17 +21,9 @@ const Map = (props: Props) => {
     }
     // 初始化BMapGL
     const map = new BMapGL.Map(mapRoot.current as any as HTMLElement)
-    map.centerAndZoom(new BMapGL.Point(116.404449, 39.914889), 5)
-    map.enableScrollWheelZoom()
-    map.setMinZoom(3)
-    map.setMaxZoom(8)
-    ;(map as any).setDisplayOptions({
-      poiText: false,
-      poiIcon: false,
-    })
-    map.setMapStyleV2({ styleId: "9c8d04152da2c4dcb9034a18700d50b9" })
     mapRef.current = map as any
     setIsLoading(false)
+    props.onLoaded(map)
   }
 
   React.useEffect(() => {
@@ -77,13 +63,7 @@ const Map = (props: Props) => {
           height: "100%",
         }}
       >
-        {isLoading ? (
-          <Progress sx={{ margin: "auto" }} />
-        ) : (
-          <MapContext.Provider value={mapRef.current as any}>
-            {props.children}
-          </MapContext.Provider>
-        )}
+        {isLoading && <Progress sx={{ margin: "auto" }} />}
       </Box>
     </Box>
   )
