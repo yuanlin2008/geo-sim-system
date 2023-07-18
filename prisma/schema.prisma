@@ -10,6 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// Account
+//////////////////////////////////////////////////////////////////////////////
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -56,4 +59,99 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Data Model
+//////////////////////////////////////////////////////////////////////////////
+/// 枚举元数据.
+model MetaEnum {
+  id            Int            @id @default(autoincrement())
+  /// Enum名称.
+  name          String         @unique
+  /// 从属于此enum的所有item.
+  items         MetaEnumItem[] @relation("MetaEnum.items")
+  /// 此enum类型的所有MetaField
+  metaFieldRefs MetaField[]    @relation("MetaField.typeEnum")
+}
+
+/// 枚举项元数据.
+model MetaEnumItem {
+  id        Int         @id @default(autoincrement())
+  name      String
+  /// Owner
+  owner     MetaEnum    @relation("MetaEnum.items", fields: [ownerId], references: [id])
+  ownerId   Int
+  /// 此项的所有DataField
+  fieldRefs DataField[] @relation("DataField.enumValue")
+}
+
+/// 结构体元数据
+model MetaStruct {
+  id            Int          @id @default(autoincrement())
+  name          String       @unique
+  metaFields    MetaField[]  @relation("MetaStruct.metaFields")
+  /// 此类型的所有MetaField
+  metaFieldRefs MetaField[]  @relation("MetaField.typeStruct")
+  /// 此MetaStruct的所有DataStruct.
+  dataStructs   DataStruct[] @relation("DataStruct.meta")
+}
+
+/// 字段类型.
+enum MetaFieldType {
+  Int
+  Float
+  String
+  Enum
+  Ref
+}
+
+/// 字段元数据
+model MetaField {
+  id           Int           @id @default(autoincrement())
+  name         String
+  /// Owner
+  owner        MetaStruct    @relation("MetaStruct.metaFields", fields: [ownerId], references: [id])
+  ownerId      Int
+  /// Type
+  type         MetaFieldType
+  typeEnum     MetaEnum?     @relation("MetaField.typeEnum", fields: [typeEnumId], references: [id])
+  typeEnumId   Int?
+  typeStruct   MetaStruct?   @relation("MetaField.typeStruct", fields: [typeStructId], references: [id])
+  typeStructId Int?
+  isArray      Boolean?
+  /// 此MetaField的所有DataField.
+  dataFields   DataField[]   @relation("DataField.meta")
+}
+
+/// 结构体数据
+model DataStruct {
+  id            Int         @id @default(autoincrement())
+  // Meta
+  meta          MetaStruct  @relation("DataStruct.meta", fields: [metaId], references: [id])
+  metaId        Int
+  /// Fields belong to this struct.
+  dataFields    DataField[] @relation("DataStruct.dataFields")
+  /// Fields referencing this struct.
+  dataFieldRefs DataField[] @relation("DataField.refValue")
+}
+
+/// 字段数据
+model DataField {
+  id          Int           @id @default(autoincrement())
+  /// Meta Info
+  meta        MetaField     @relation("DataField.meta", fields: [metaId], references: [id])
+  metaId      Int
+  /// Owner
+  owner       DataStruct    @relation("DataStruct.dataFields", fields: [ownerId], references: [id])
+  ownerId     Int
+  // Values.
+  arrayId     Int?
+  intValue    Int?
+  floatValue  Float?
+  stringValue String?
+  enumValue   MetaEnumItem? @relation("DataField.enumValue", fields: [enumValueId], references: [id])
+  enumValueId Int?
+  refValue    DataStruct?   @relation("DataField.refValue", fields: [refValueId], references: [id])
+  refValueId  Int?
 }
