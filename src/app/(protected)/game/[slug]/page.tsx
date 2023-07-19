@@ -17,7 +17,7 @@ const Game = () => {
     map.setMapStyleV2({ styleId: "9c8d04152da2c4dcb9034a18700d50b9" })
   }
   return (
-    <Box sx={{ width: "100%", height: "100%" }}>
+    <Box component="main" sx={{ flexGrow: 1, height: "auto" }}>
       <Map onLoaded={onMapLoaded} />
     </Box>
   )

@@ -91,15 +91,13 @@ function ToolBar_() {
 
 const AppBar_ = (props: Props) => {
   return (
-    <SessionProvider>
-      <AppBar
-        position="static"
-        elevation={0}
-        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
-      >
-        <ToolBar_ />
-      </AppBar>
-    </SessionProvider>
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
+    >
+      <ToolBar_ />
+    </AppBar>
   )
 }
 

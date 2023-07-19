@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 
-import { UserLoginSchema, UserLoginSchemaType } from "@/lib/schema"
+import { UserLoginSchema } from "@/lib/schema"
 import { TextField } from "@/components/RHF"
 
 const Login = () => {
@@ -21,7 +21,7 @@ const Login = () => {
 
   // Credential Login
   function CredentialLogin() {
-    const { control, handleSubmit } = useForm<UserLoginSchemaType>({
+    const { control, handleSubmit } = useForm<UserLoginSchema>({
       resolver: zodResolver(UserLoginSchema),
       defaultValues: {
         username: "",
@@ -29,7 +29,7 @@ const Login = () => {
       },
     })
 
-    async function onSubmit(data: UserLoginSchemaType) {
+    async function onSubmit(data: UserLoginSchema) {
       console.log(data)
       setIsLoading(true)
       setProvider("credentials")

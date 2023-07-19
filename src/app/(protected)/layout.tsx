@@ -1,7 +1,8 @@
 import React from "react"
 import Box from "@mui/material/Box"
 
-import AppBar from "@/app/(protected)/AppBar"
+import AppBar from "@/components/AppBar"
+import SessionProvider from "@/components/SessionProvider"
 
 export default async function Layout({
   children,
@@ -9,9 +10,11 @@ export default async function Layout({
   children: React.ReactNode
 }) {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <AppBar />
-      <Box sx={{ flexGrow: 1 }}>{children}</Box>
-    </Box>
+    <SessionProvider>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <AppBar />
+        {children}
+      </Box>
+    </SessionProvider>
   )
 }
