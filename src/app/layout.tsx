@@ -1,18 +1,19 @@
-import "@fontsource/roboto/300.css"
-import "@fontsource/roboto/400.css"
-import "@fontsource/roboto/500.css"
-import "@fontsource/roboto/700.css"
-
 import { Metadata } from "next"
+import { Roboto } from "next/font/google"
 import { AppConfig } from "@/config"
 
-import ThemeProvider from "./ThemeProvider"
+import ThemeRegistry from "@/components/ThemeRegistry/ThemeRegistry"
 
 export const metadata: Metadata = {
   title: AppConfig.appName,
   description: AppConfig.appDesc,
   icons: {},
 }
+
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+})
 
 export default function RootLayout({
   children,
@@ -21,8 +22,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className={roboto.className}>
+        <ThemeRegistry>{children}</ThemeRegistry>
       </body>
     </html>
   )
