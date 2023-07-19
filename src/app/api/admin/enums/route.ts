@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from "next/server"
+import type { Prisma } from "@prisma/client"
 
 import prisma from "@/lib/prisma"
 import { CreateMetaEnumSchema } from "@/lib/schema"
 
-export async function GET() {
-  const enums = await prisma.metaEnum.findMany({
+async function getMetaEnumList() {
+  return await prisma.metaEnum.findMany({
     select: {
       id: true,
       name: true,
     },
   })
+}
+
+export type MetaEnumList = Prisma.PromiseReturnType<typeof getMetaEnumList>
+
+export async function GET() {
+  const enums = await getMetaEnumList()
   return NextResponse.json(enums)
 }
 
@@ -20,5 +27,5 @@ export async function POST(req: NextRequest) {
       name: params.name,
     },
   })
-  return NextResponse.json(me)
+  return new NextResponse()
 }
