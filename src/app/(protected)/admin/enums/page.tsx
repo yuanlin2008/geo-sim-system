@@ -17,7 +17,8 @@ import ListItemText from "@mui/material/ListItemText"
 import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
 
-import type { CreateMetaEnumSchema } from "@/lib/schema"
+import { CreateMetaEnumSchema } from "@/lib/schema"
+import { TextField, useForm } from "@/components/RHF"
 import type { MetaEnumList } from "@/app/api/admin/enums/route"
 
 type CreateEnumDialogProps = {
@@ -25,8 +26,27 @@ type CreateEnumDialogProps = {
   onSubmit?: (params: CreateMetaEnumSchema) => void
 }
 
+const DefaultValue: CreateMetaEnumSchema = { name: "", desc: "" }
 function CreateEnumDialog(props: CreateEnumDialogProps) {
   const [isOpen, setOpen] = useState(false)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const { control, handleSubmit, reset } = useForm(
+    CreateMetaEnumSchema,
+    DefaultValue
+  )
+  function onCancel() {
+    reset(DefaultValue)
+    setOpen(false)
+  }
+  async function onSubmit(data: CreateMetaEnumSchema) {
+    reset(DefaultValue)
+    console.log(data)
+    setIsLoading(true)
+    // todo
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 2000)
+  }
   return (
     <>
       <Button
@@ -42,9 +62,27 @@ function CreateEnumDialog(props: CreateEnumDialogProps) {
       </Button>
       <Dialog open={isOpen}>
         <DialogTitle>创建枚举类型</DialogTitle>
+        <DialogContent>
+          <TextField
+            control={control}
+            margin="dense"
+            label="名称"
+            name="name"
+            size="small"
+            fullWidth
+          />
+          <TextField
+            control={control}
+            margin="dense"
+            label="描述"
+            name="desc"
+            size="small"
+            fullWidth
+          />
+        </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>取消</Button>
-          <Button onClick={() => setOpen(false)}>创建</Button>
+          <Button onClick={onCancel}>取消</Button>
+          <Button onClick={handleSubmit(onSubmit)}>创建</Button>
         </DialogActions>
       </Dialog>
     </>

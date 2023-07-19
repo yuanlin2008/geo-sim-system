@@ -2,7 +2,6 @@
 
 import React from "react"
 import { AppConfig } from "@/config"
-import { zodResolver } from "@hookform/resolvers/zod"
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import LoadingButton from "@mui/lab/LoadingButton"
 import Avatar from "@mui/material/Avatar"
@@ -10,10 +9,9 @@ import Box from "@mui/material/Box"
 import Divider from "@mui/material/Divider"
 import Typography from "@mui/material/Typography"
 import { signIn } from "next-auth/react"
-import { useForm } from "react-hook-form"
 
 import { UserLoginSchema } from "@/lib/schema"
-import { TextField } from "@/components/RHF"
+import { TextField, useForm } from "@/components/RHF"
 
 const Login = () => {
   const [isLoading, setIsLoading] = React.useState(false)
@@ -21,12 +19,9 @@ const Login = () => {
 
   // Credential Login
   function CredentialLogin() {
-    const { control, handleSubmit } = useForm<UserLoginSchema>({
-      resolver: zodResolver(UserLoginSchema),
-      defaultValues: {
-        username: "",
-        password: "",
-      },
+    const { control, handleSubmit } = useForm(UserLoginSchema, {
+      username: "",
+      password: "",
     })
 
     async function onSubmit(data: UserLoginSchema) {
