@@ -16,13 +16,11 @@ import Stack from "@mui/material/Stack"
 import { IDNameDescSchema, NameDescSchema } from "@/lib/schema"
 import AutoFormDialog from "@/components/AutoFormDialog"
 
-type CreateEnumDialogProps = {
-  disabled?: boolean
-  onSubmit?: (params: NameDescSchema) => void
-}
-
 const DefaultValue: NameDescSchema = { name: "", desc: "" }
-function CreateEnumDialog(props: CreateEnumDialogProps) {
+function CreateEnumDialog(props: {
+  disabled: boolean
+  onSubmit: (data: NameDescSchema) => Promise<string | null>
+}) {
   const [isOpen, setOpen] = useState(false)
   return (
     <>
@@ -48,10 +46,9 @@ function CreateEnumDialog(props: CreateEnumDialogProps) {
         ]}
         onCancel={() => setOpen(false)}
         onSubmit={async (data) => {
-          console.log(data)
-          await new Promise((resolve) => setTimeout(resolve, 2000))
+          const r = await props.onSubmit(data)
           setOpen(false)
-          return null
+          return r
         }}
       />
     </>
@@ -65,7 +62,7 @@ function EnumList(props: EnumListProps) {
   return (
     <>
       {props.list ? (
-        <List sx={{ width: "100%" }}>
+        <List dense sx={{ width: "100%" }}>
           {props.list.map((e) => (
             <ListItem key={e.id} disablePadding>
               <ListItemButton>
@@ -93,34 +90,33 @@ const Page = (props: Props) => {
     undefined
   )
 
-  useEffect(() => {
-    console.log("useEffect")
-    fetch("/api/admin/enums")
-      .then((r) => r.json())
-      .then((data) => {
-        setEnumList(data)
-      })
-  }, [])
+  async function fetchEnumList() {
+    const r = await fetch("/api/admin/enums")
+    setEnumList(await r.json())
+  }
 
-  async function handleCreate() {
-    const params: NameDescSchema = {
-      name: "",
-      desc: "",
-    }
+  async function onCreateEnum(data: NameDescSchema) {
     await fetch("/api/admin/enums", {
       method: "POST",
       headers: {
         "content-Type": "application/json",
       },
-      body: JSON.stringify(params),
+      body: JSON.stringify(data),
     })
+    setEnumList(undefined)
+    await fetchEnumList()
+    return null
   }
+
+  useEffect(() => {
+    fetchEnumList()
+  }, [])
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Box sx={{ p: 2, width: 250 }}>
+      <Box sx={{ p: 2, width: 300 }}>
         <Stack spacing={2}>
-          <CreateEnumDialog disabled={!enumList} />
+          <CreateEnumDialog disabled={!enumList} onSubmit={onCreateEnum} />
           <EnumList list={enumList} />
         </Stack>
       </Box>
