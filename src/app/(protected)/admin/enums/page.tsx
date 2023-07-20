@@ -5,10 +5,6 @@ import IconEnums from "@mui/icons-material/Explicit"
 import NewIcon from "@mui/icons-material/NoteAdd"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogTitle from "@mui/material/DialogTitle"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import ListItemButton from "@mui/material/ListItemButton"
@@ -18,7 +14,7 @@ import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
 
 import { IDNameDescSchema, NameDescSchema } from "@/lib/schema"
-import { FormProvider, TextField, useForm } from "@/components/ZodRHForm"
+import AutoFormDialog from "@/components/AutoFormDialog"
 
 type CreateEnumDialogProps = {
   disabled?: boolean
@@ -28,21 +24,6 @@ type CreateEnumDialogProps = {
 const DefaultValue: NameDescSchema = { name: "", desc: "" }
 function CreateEnumDialog(props: CreateEnumDialogProps) {
   const [isOpen, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = React.useState(false)
-  const form = useForm(NameDescSchema, DefaultValue)
-  function onCancel() {
-    form.reset(DefaultValue)
-    setOpen(false)
-  }
-  async function onSubmit(data: NameDescSchema) {
-    form.reset(DefaultValue)
-    console.log(data)
-    setIsLoading(true)
-    // todo
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-  }
   return (
     <>
       <Button
@@ -56,31 +37,23 @@ function CreateEnumDialog(props: CreateEnumDialogProps) {
       >
         新建枚举类型
       </Button>
-      <Dialog open={isOpen}>
-        <DialogTitle>创建枚举类型</DialogTitle>
-        <DialogContent>
-          <FormProvider {...form}>
-            <TextField
-              margin="dense"
-              label="名称"
-              name="name"
-              size="small"
-              fullWidth
-            />
-            <TextField
-              margin="dense"
-              label="描述"
-              name="desc"
-              size="small"
-              fullWidth
-            />
-          </FormProvider>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onCancel}>取消</Button>
-          <Button onClick={form.handleSubmit(onSubmit)}>创建</Button>
-        </DialogActions>
-      </Dialog>
+      <AutoFormDialog
+        isOpen={isOpen}
+        title="创建枚举类型"
+        schema={NameDescSchema}
+        defaultValues={DefaultValue}
+        names={[
+          ["name", "名称"],
+          ["desc", "描述"],
+        ]}
+        onCancel={() => setOpen(false)}
+        onSubmit={async (data) => {
+          console.log(data)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+          setOpen(false)
+          return null
+        }}
+      />
     </>
   )
 }
