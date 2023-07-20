@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography"
 import { signIn } from "next-auth/react"
 
 import { UserLoginSchema } from "@/lib/schema"
-import { TextField, useForm } from "@/components/RHFZod"
+import { FormProvider, TextField, useForm } from "@/components/ZodRHForm"
 
 const Login = () => {
   const [isLoading, setIsLoading] = React.useState(false)
@@ -19,7 +19,7 @@ const Login = () => {
 
   // Credential Login
   function CredentialLogin() {
-    const { control, handleSubmit } = useForm(UserLoginSchema, {
+    const form = useForm(UserLoginSchema, {
       username: "",
       password: "",
     })
@@ -34,29 +34,29 @@ const Login = () => {
       }, 2000)
     }
     return (
-      <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          disabled={isLoading}
-          control={control}
-          margin="normal"
-          fullWidth
-          label="用户名"
-          name="username"
-          autoComplete="username"
-          autoFocus
-          size="small"
-        />
-        <TextField
-          disabled={isLoading}
-          control={control}
-          margin="normal"
-          fullWidth
-          name="password"
-          label="密码"
-          type="password"
-          autoComplete="current-password"
-          size="small"
-        />
+      <Box component="form" onSubmit={form.handleSubmit(onSubmit)}>
+        <FormProvider {...form}>
+          <TextField
+            disabled={isLoading}
+            margin="normal"
+            fullWidth
+            label="用户名"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            size="small"
+          />
+          <TextField
+            disabled={isLoading}
+            margin="normal"
+            fullWidth
+            name="password"
+            label="密码"
+            type="password"
+            autoComplete="current-password"
+            size="small"
+          />
+        </FormProvider>
         <LoadingButton
           loading={isLoading && provider == "credentials"}
           disabled={isLoading}

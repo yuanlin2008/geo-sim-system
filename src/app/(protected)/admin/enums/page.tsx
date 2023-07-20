@@ -18,7 +18,7 @@ import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
 
 import { IDNameDescSchema, NameDescSchema } from "@/lib/schema"
-import { TextField, useForm } from "@/components/RHFZod"
+import { TextField, useForm } from "@/components/ZodRHForm"
 
 type CreateEnumDialogProps = {
   disabled?: boolean
