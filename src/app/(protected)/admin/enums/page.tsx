@@ -18,7 +18,7 @@ import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
 
 import { IDNameDescSchema, NameDescSchema } from "@/lib/schema"
-import { TextField, useForm } from "@/components/ZodRHForm"
+import { FormProvider, TextField, useForm } from "@/components/ZodRHForm"
 
 type CreateEnumDialogProps = {
   disabled?: boolean
@@ -29,13 +29,13 @@ const DefaultValue: NameDescSchema = { name: "", desc: "" }
 function CreateEnumDialog(props: CreateEnumDialogProps) {
   const [isOpen, setOpen] = useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
-  const { control, handleSubmit, reset } = useForm(NameDescSchema, DefaultValue)
+  const form = useForm(NameDescSchema, DefaultValue)
   function onCancel() {
-    reset(DefaultValue)
+    form.reset(DefaultValue)
     setOpen(false)
   }
   async function onSubmit(data: NameDescSchema) {
-    reset(DefaultValue)
+    form.reset(DefaultValue)
     console.log(data)
     setIsLoading(true)
     // todo
@@ -59,26 +59,26 @@ function CreateEnumDialog(props: CreateEnumDialogProps) {
       <Dialog open={isOpen}>
         <DialogTitle>创建枚举类型</DialogTitle>
         <DialogContent>
-          <TextField
-            control={control}
-            margin="dense"
-            label="名称"
-            name="name"
-            size="small"
-            fullWidth
-          />
-          <TextField
-            control={control}
-            margin="dense"
-            label="描述"
-            name="desc"
-            size="small"
-            fullWidth
-          />
+          <FormProvider {...form}>
+            <TextField
+              margin="dense"
+              label="名称"
+              name="name"
+              size="small"
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              label="描述"
+              name="desc"
+              size="small"
+              fullWidth
+            />
+          </FormProvider>
         </DialogContent>
         <DialogActions>
           <Button onClick={onCancel}>取消</Button>
-          <Button onClick={handleSubmit(onSubmit)}>创建</Button>
+          <Button onClick={form.handleSubmit(onSubmit)}>创建</Button>
         </DialogActions>
       </Dialog>
     </>
