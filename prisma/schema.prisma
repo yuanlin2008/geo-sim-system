@@ -68,7 +68,7 @@ model VerificationToken {
 model MetaEnum {
   id            Int            @id @default(autoincrement())
   name          String         @unique
-  desc          String?
+  desc          String         @default("")
   /// 从属于此enum的所有item.
   items         MetaEnumItem[] @relation("MetaEnum.items")
   /// 此enum类型的所有MetaField
@@ -78,8 +78,8 @@ model MetaEnum {
 /// 枚举项元数据.
 model MetaEnumItem {
   id        Int         @id @default(autoincrement())
-  name      String
-  desc      String?
+  name      String      @default("")
+  desc      String
   /// Owner
   owner     MetaEnum    @relation("MetaEnum.items", fields: [ownerId], references: [id])
   ownerId   Int
@@ -91,7 +91,7 @@ model MetaEnumItem {
 model MetaStruct {
   id            Int          @id @default(autoincrement())
   name          String       @unique
-  desc          String?
+  desc          String       @default("")
   metaFields    MetaField[]  @relation("MetaStruct.metaFields")
   /// 此类型的所有MetaField
   metaFieldRefs MetaField[]  @relation("MetaField.typeStruct")
@@ -112,7 +112,7 @@ enum MetaFieldType {
 model MetaField {
   id           Int           @id @default(autoincrement())
   name         String
-  desc         String?
+  desc         String        @default("")
   /// Owner
   owner        MetaStruct    @relation("MetaStruct.metaFields", fields: [ownerId], references: [id])
   ownerId      Int

@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography"
 import { signIn } from "next-auth/react"
 
 import { UserLoginSchema } from "@/lib/schema"
-import { TextField, useForm } from "@/components/RHF"
+import { TextField, useForm } from "@/components/RHFZod"
 
 const Login = () => {
   const [isLoading, setIsLoading] = React.useState(false)

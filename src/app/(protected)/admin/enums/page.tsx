@@ -17,28 +17,24 @@ import ListItemText from "@mui/material/ListItemText"
 import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
 
-import { CreateMetaEnumSchema } from "@/lib/schema"
-import { TextField, useForm } from "@/components/RHF"
-import type { MetaEnumList } from "@/app/api/admin/enums/route"
+import { IDNameDescSchema, NameDescSchema } from "@/lib/schema"
+import { TextField, useForm } from "@/components/RHFZod"
 
 type CreateEnumDialogProps = {
   disabled?: boolean
-  onSubmit?: (params: CreateMetaEnumSchema) => void
+  onSubmit?: (params: NameDescSchema) => void
 }
 
-const DefaultValue: CreateMetaEnumSchema = { name: "", desc: "" }
+const DefaultValue: NameDescSchema = { name: "", desc: "" }
 function CreateEnumDialog(props: CreateEnumDialogProps) {
   const [isOpen, setOpen] = useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
-  const { control, handleSubmit, reset } = useForm(
-    CreateMetaEnumSchema,
-    DefaultValue
-  )
+  const { control, handleSubmit, reset } = useForm(NameDescSchema, DefaultValue)
   function onCancel() {
     reset(DefaultValue)
     setOpen(false)
   }
-  async function onSubmit(data: CreateMetaEnumSchema) {
+  async function onSubmit(data: NameDescSchema) {
     reset(DefaultValue)
     console.log(data)
     setIsLoading(true)
@@ -90,7 +86,7 @@ function CreateEnumDialog(props: CreateEnumDialogProps) {
 }
 
 type EnumListProps = {
-  list?: MetaEnumList
+  list?: IDNameDescSchema[]
 }
 function EnumList(props: EnumListProps) {
   return (
@@ -120,7 +116,9 @@ function EnumList(props: EnumListProps) {
 type Props = {}
 
 const Page = (props: Props) => {
-  const [enumList, setEnumList] = useState<MetaEnumList | undefined>(undefined)
+  const [enumList, setEnumList] = useState<IDNameDescSchema[] | undefined>(
+    undefined
+  )
   async function fetchMetaEnumList() {
     const r = await fetch("/api/admin/enums")
     setEnumList(await r.json())
@@ -130,7 +128,7 @@ const Page = (props: Props) => {
   }, [])
 
   async function handleCreate() {
-    const params: CreateMetaEnumSchema = {
+    const params: NameDescSchema = {
       name: "",
       desc: "",
     }

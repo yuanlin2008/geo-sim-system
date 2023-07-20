@@ -13,28 +13,23 @@ export const ParamIDSchema = z.object({
 })
 export type ParamIDSchema = z.infer<typeof ParamIDSchema>
 
-export const CreateMetaEnumSchema = z.object({
+export const NameDescSchema = z.object({
   name: z.string().min(1).max(64),
-  desc: z.string().max(256).optional(),
+  desc: z.string().max(256),
 })
-export type CreateMetaEnumSchema = z.infer<typeof CreateMetaEnumSchema>
+export type NameDescSchema = z.infer<typeof NameDescSchema>
 
-export const UpdateMetaEnumSchema = z.object({
-  name: z.string().min(1).max(64).optional(),
-  desc: z.string().optional(),
-  addItem: z
-    .object({
-      name: z.string().min(1).max(64),
-      desc: z.string().max(256).optional(),
-    })
-    .optional(),
-  updateItem: z
-    .object({
-      id: z.number(),
-      name: z.string().min(1).max(64),
-      desc: z.string().max(256).optional(),
-    })
-    .optional(),
+export const IDNameDescSchema = z.object({
+  id: z.number(),
+  name: z.string().min(1).max(64),
+  desc: z.string().max(256),
+})
+export type IDNameDescSchema = z.infer<typeof IDNameDescSchema>
+
+export const MetaEnumPatchSchema = z.object({
+  self: NameDescSchema.optional(),
+  addItem: NameDescSchema.optional(),
+  updateItem: IDNameDescSchema.optional(),
   deleteItem: z.number().optional(),
 })
-export type UpdateMetaEnumSchema = z.infer<typeof UpdateMetaEnumSchema>
+export type MetaEnumPatchSchema = z.infer<typeof MetaEnumPatchSchema>

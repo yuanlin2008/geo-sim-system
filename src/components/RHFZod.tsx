@@ -1,5 +1,5 @@
 /**
- * React Hook Form Components.
+ * 使用React hook form和zod验证封装后的form控件.
  */
 import { zodResolver } from "@hookform/resolvers/zod"
 import MUITextField from "@mui/material/TextField"
@@ -14,12 +14,6 @@ type TextFieldParams = Omit<
   control: any
 }
 
-/**
- * 封装使用zod的useForm
- * @param schema
- * @param defaultValues
- * @returns
- */
 export function useForm<T extends z.Schema<any, any>>(
   schema: T,
   defaultValues?: z.infer<T>
@@ -30,11 +24,6 @@ export function useForm<T extends z.Schema<any, any>>(
   })
 }
 
-/**
- * 是否用react hook form的TextField
- * @param props
- * @returns
- */
 export function TextField(props: TextFieldParams) {
   return (
     <Controller
