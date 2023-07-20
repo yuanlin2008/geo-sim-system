@@ -92,12 +92,14 @@ const Page = (props: Props) => {
   const [enumList, setEnumList] = useState<IDNameDescSchema[] | undefined>(
     undefined
   )
-  async function fetchMetaEnumList() {
-    const r = await fetch("/api/admin/enums")
-    setEnumList(await r.json())
-  }
+
   useEffect(() => {
-    fetchMetaEnumList()
+    console.log("useEffect")
+    fetch("/api/admin/enums")
+      .then((r) => r.json())
+      .then((data) => {
+        setEnumList(data)
+      })
   }, [])
 
   async function handleCreate() {
