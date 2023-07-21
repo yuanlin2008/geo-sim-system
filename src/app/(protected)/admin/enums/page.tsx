@@ -23,6 +23,7 @@ import {
 } from "@/lib/schema"
 import AlertDialog from "@/components/AlertDialog"
 import AutoFormDialog from "@/components/AutoFormDialog"
+import AutoList from "@/components/AutoList"
 import Icons from "@/components/Icons"
 
 const CreateEnumDefaults: MetaEnumSchema = {
@@ -87,41 +88,21 @@ function EnumList(props: {
   return (
     <>
       {props.enumList ? (
-        <List dense>
-          {props.enumList.map((e) => (
-            <ListItem
-              key={e.id}
-              disablePadding
-              disableGutters
-              secondaryAction={
-                <IconButton
-                  onClick={(event) => {
-                    setMenuContext({
-                      anchor: event.currentTarget,
-                      selected: e,
-                    })
-                  }}
-                >
-                  <Icons.MoreH />
-                </IconButton>
-              }
-            >
-              <Tooltip title={e.desc} placement="right">
-                <ListItemButton
-                  selected={e == props.curEnum}
-                  onClick={() => {
-                    props.onSelect(e)
-                  }}
-                >
-                  <ListItemIcon>
-                    <Icons.Enum />
-                  </ListItemIcon>
-                  <ListItemText primary={e.name} />
-                </ListItemButton>
-              </Tooltip>
-            </ListItem>
-          ))}
-        </List>
+        <AutoList
+          list={props.enumList!}
+          keyName={"id"}
+          textName={"name"}
+          tipName={"desc"}
+          icon={Icons.Enum}
+          selected={props.curEnum!}
+          onSelect={props.onSelect}
+          onMore={(anchor, e) => {
+            setMenuContext({
+              anchor: anchor,
+              selected: e,
+            })
+          }}
+        />
       ) : (
         <Stack spacing={1}>
           <Skeleton variant="rounded" animation="wave" />
