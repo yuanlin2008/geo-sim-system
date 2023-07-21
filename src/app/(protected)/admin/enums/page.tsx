@@ -13,6 +13,7 @@ import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
+import Tooltip from "@mui/material/Tooltip"
 import Typography from "@mui/material/Typography"
 
 import {
@@ -105,17 +106,19 @@ function EnumList(props: {
                 </IconButton>
               }
             >
-              <ListItemButton
-                selected={e == props.curEnum}
-                onClick={() => {
-                  props.onSelect(e)
-                }}
-              >
-                <ListItemIcon>
-                  <Icons.Enum />
-                </ListItemIcon>
-                <ListItemText primary={e.name} />
-              </ListItemButton>
+              <Tooltip title={e.desc} placement="right">
+                <ListItemButton
+                  selected={e == props.curEnum}
+                  onClick={() => {
+                    props.onSelect(e)
+                  }}
+                >
+                  <ListItemIcon>
+                    <Icons.Enum />
+                  </ListItemIcon>
+                  <ListItemText primary={e.name} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
           ))}
         </List>
@@ -184,6 +187,8 @@ function EnumList(props: {
     </>
   )
 }
+
+function EnumItemTable(props: {}) {}
 
 type Props = {}
 
