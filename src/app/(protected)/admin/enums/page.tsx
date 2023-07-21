@@ -3,18 +3,8 @@
 import React, { useEffect, useState } from "react"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
-import IconButton from "@mui/material/IconButton"
-import List from "@mui/material/List"
-import ListItem from "@mui/material/ListItem"
-import ListItemButton from "@mui/material/ListItemButton"
-import ListItemIcon from "@mui/material/ListItemIcon"
-import ListItemText from "@mui/material/ListItemText"
-import Menu from "@mui/material/Menu"
-import MenuItem from "@mui/material/MenuItem"
 import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
-import Tooltip from "@mui/material/Tooltip"
-import Typography from "@mui/material/Typography"
 
 import {
   MetaEnumPatchSchema,
@@ -78,10 +68,6 @@ function EnumList(props: {
   onEdit: (id: number, e: MetaEnumSchema) => Promise<string | null>
   onDelete: (e: MetaEnumRecSchema) => void
 }) {
-  const [menuContext, setMenuContext] = useState<{
-    anchor: HTMLElement
-    selected: MetaEnumRecSchema
-  } | null>(null)
   const [editEnum, setEditEnum] = useState<MetaEnumRecSchema | null>(null)
   const [delEnum, setDelEnum] = useState<MetaEnumRecSchema | null>(null)
 
@@ -96,47 +82,28 @@ function EnumList(props: {
           icon={Icons.Enum}
           selected={props.curEnum!}
           onSelect={props.onSelect}
-          onMore={(anchor, e) => {
-            setMenuContext({
-              anchor: anchor,
-              selected: e,
-            })
-          }}
+          onAction={[
+            [
+              Icons.Edit,
+              "编辑",
+              (e) => {
+                setEditEnum(e)
+              },
+            ],
+            [
+              Icons.Delete,
+              "删除",
+              (e) => {
+                setDelEnum(e)
+              },
+            ],
+          ]}
         />
       ) : (
         <Stack spacing={1}>
           <Skeleton variant="rounded" animation="wave" />
         </Stack>
       )}
-      {/** 弹出菜单. */}
-      <Menu
-        open={!!menuContext}
-        anchorEl={menuContext?.anchor}
-        onClose={() => setMenuContext(null)}
-      >
-        <MenuItem
-          onClick={() => {
-            setEditEnum(menuContext?.selected!)
-            setMenuContext(null)
-          }}
-        >
-          <ListItemIcon>
-            <Icons.Edit />
-          </ListItemIcon>
-          <Typography>编辑</Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setDelEnum(menuContext?.selected!)
-            setMenuContext(null)
-          }}
-        >
-          <ListItemIcon>
-            <Icons.Delete />
-          </ListItemIcon>
-          <Typography>删除</Typography>
-        </MenuItem>
-      </Menu>
       {/** 编辑对话框 */}
       <AutoFormDialog
         isOpen={!!editEnum}
