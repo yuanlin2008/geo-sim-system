@@ -17,9 +17,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const params = MetaEnumSchema.parse(await req.json())
   const me = await prisma.metaEnum.create({
-    data: {
-      name: params.name,
-    },
+    data: { ...params },
   })
   return new NextResponse()
 }

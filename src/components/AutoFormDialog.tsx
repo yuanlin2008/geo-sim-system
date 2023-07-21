@@ -37,6 +37,11 @@ function AutoFormDialog<ST extends z.ZodTypeAny, T = z.infer<ST>>({
   const [error, setError] = React.useState<string | null>(null)
   const [submitting, setSubmitting] = React.useState<boolean>(false)
 
+  // reset defaults.
+  React.useEffect(() => {
+    form.reset(defaultValues)
+  }, [defaultValues, form])
+
   function handleCancel() {
     form.reset()
     setError(null)

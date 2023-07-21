@@ -36,18 +36,14 @@ export async function PATCH(req: NextRequest, context: ParamIDSchema) {
       where: {
         id: id,
       },
-      data: {
-        name: updateParams.self.name,
-        desc: updateParams.self.desc,
-      },
+      data: { ...updateParams.self },
     })
   }
   if (updateParams.addItem) {
     await prisma.metaEnumItem.create({
       data: {
         ownerId: id,
-        name: updateParams.addItem.name,
-        desc: updateParams.addItem.desc,
+        ...updateParams.addItem,
       },
     })
   }
