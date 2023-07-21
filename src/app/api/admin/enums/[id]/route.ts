@@ -10,9 +10,7 @@ import {
 export async function DELETE(req: NextRequest, context: ParamIDSchema) {
   const { params } = ParamIDSchema.parse(context)
   await prisma.metaEnum.delete({
-    where: {
-      id: +params.id,
-    },
+    where: { id: +params.id },
   })
   return new NextResponse(null)
 }
@@ -20,9 +18,7 @@ export async function DELETE(req: NextRequest, context: ParamIDSchema) {
 export async function GET(req: NextRequest, context: ParamIDSchema) {
   const { params } = ParamIDSchema.parse(context)
   const e: MetaEnumItemRecSchema[] = await prisma.metaEnumItem.findMany({
-    where: {
-      ownerId: +params.id,
-    },
+    where: { ownerId: +params.id },
   })
   return NextResponse.json(e)
 }
@@ -33,36 +29,24 @@ export async function PATCH(req: NextRequest, context: ParamIDSchema) {
   const updateParams = MetaEnumPatchSchema.parse(await req.json())
   if (updateParams.self) {
     await prisma.metaEnum.update({
-      where: {
-        id: id,
-      },
+      where: { id: id },
       data: { ...updateParams.self },
     })
   }
   if (updateParams.addItem) {
     await prisma.metaEnumItem.create({
-      data: {
-        ownerId: id,
-        ...updateParams.addItem,
-      },
+      data: { ownerId: id, ...updateParams.addItem },
     })
   }
   if (updateParams.updateItem) {
     await prisma.metaEnumItem.update({
-      where: {
-        id: updateParams.updateItem.id,
-      },
-      data: {
-        name: updateParams.updateItem.name,
-        desc: updateParams.updateItem.desc,
-      },
+      where: { id: updateParams.updateItem.id },
+      data: { ...updateParams.updateItem },
     })
   }
   if (updateParams.deleteItem) {
     await prisma.metaEnumItem.delete({
-      where: {
-        id: updateParams.deleteItem,
-      },
+      where: { id: updateParams.deleteItem },
     })
   }
   return new NextResponse(null)
