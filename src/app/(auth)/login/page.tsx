@@ -25,7 +25,6 @@ const Login = () => {
     })
 
     async function onSubmit(data: UserLoginSchema) {
-      console.log(data)
       setIsLoading(true)
       setProvider("credentials")
       // todo

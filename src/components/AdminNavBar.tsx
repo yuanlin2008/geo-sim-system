@@ -3,9 +3,6 @@
 import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import IconEnums from "@mui/icons-material/Explicit"
-import IconHome from "@mui/icons-material/Home"
-import IconStructs from "@mui/icons-material/Storage"
 import Box from "@mui/material/Box"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
@@ -13,10 +10,12 @@ import ListItemButton from "@mui/material/ListItemButton"
 import ListItemIcon from "@mui/material/ListItemIcon"
 import Tooltip from "@mui/material/Tooltip"
 
+import Icons from "@/components/Icons"
+
 const NavLinks = [
-  { text: "Home", icon: IconHome, href: "/admin" },
-  { text: "枚举类型", icon: IconEnums, href: "/admin/enums" },
-  { text: "数据类型", icon: IconStructs, href: "/admin/structs" },
+  { text: "Home", icon: Icons.Home, href: "/admin" },
+  { text: "枚举类型", icon: Icons.Enum, href: "/admin/enums" },
+  { text: "数据类型", icon: Icons.Struct, href: "/admin/structs" },
 ]
 
 const NavBar = () => {

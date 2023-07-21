@@ -2,7 +2,6 @@
 
 import React, { useState } from "react"
 import { AppConfig } from "@/config"
-import PublicIcon from "@mui/icons-material/Public"
 import AppBar from "@mui/material/AppBar"
 import Avatar from "@mui/material/Avatar"
 import Box from "@mui/material/Box"
@@ -14,14 +13,14 @@ import Tooltip from "@mui/material/Tooltip"
 import Typography from "@mui/material/Typography"
 import { signOut, useSession } from "next-auth/react"
 
-import SessionProvider from "./SessionProvider"
+import Icons from "@/components/Icons"
 
 interface Props {}
 
 function Title() {
   return (
     <>
-      <PublicIcon />
+      <Icons.App />
       <Typography
         component="a"
         href="/"
