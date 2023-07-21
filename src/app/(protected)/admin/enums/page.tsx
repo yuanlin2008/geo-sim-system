@@ -21,11 +21,23 @@ const CreateEnumDefaults: MetaEnumSchema = {
   desc: "",
 }
 
+const MetaEnumNames: Array<[keyof MetaEnumSchema, string]> = [
+  ["name", "名称"],
+  ["desc", "描述"],
+]
+
 function CreateEnumDialog(props: {
   disabled: boolean
   onCreate: (data: MetaEnumSchema) => Promise<string | null>
 }) {
   const [isOpen, setOpen] = useState(false)
+
+  async function handleSubmit(e: MetaEnumSchema) {
+    const r = await props.onCreate(e)
+    setOpen(false)
+    return r
+  }
+
   return (
     <>
       <Button
@@ -44,18 +56,9 @@ function CreateEnumDialog(props: {
         title="创建枚举类型"
         schema={MetaEnumSchema}
         defaultValues={CreateEnumDefaults}
-        names={[
-          ["name", "名称"],
-          ["desc", "描述"],
-        ]}
-        onCancel={() => {
-          setOpen(false)
-        }}
-        onSubmit={async (data) => {
-          const r = await props.onCreate(data)
-          setOpen(false)
-          return r
-        }}
+        names={MetaEnumNames}
+        onCancel={() => setOpen(false)}
+        onSubmit={handleSubmit}
       />
     </>
   )
@@ -71,6 +74,21 @@ function EnumList(props: {
   const [editEnum, setEditEnum] = useState<MetaEnumRecSchema | null>(null)
   const [delEnum, setDelEnum] = useState<MetaEnumRecSchema | null>(null)
 
+  function handleEditAction(e: MetaEnumRecSchema) {
+    setEditEnum(e)
+  }
+  function handleDelAction(e: MetaEnumRecSchema) {
+    setDelEnum(e)
+  }
+  async function handleEditSubmit(e: MetaEnumSchema) {
+    const r = await props.onEdit(editEnum?.id!, e)
+    setEditEnum(null)
+    return r
+  }
+  function handleDeleteYes() {
+    setDelEnum(null)
+    props.onDelete(delEnum!)
+  }
   return (
     <>
       {props.enumList ? (
@@ -83,20 +101,8 @@ function EnumList(props: {
           selected={props.curEnum!}
           onSelect={props.onSelect}
           onAction={[
-            [
-              Icons.Edit,
-              "编辑",
-              (e) => {
-                setEditEnum(e)
-              },
-            ],
-            [
-              Icons.Delete,
-              "删除",
-              (e) => {
-                setDelEnum(e)
-              },
-            ],
+            [Icons.Edit, "编辑", handleEditAction],
+            [Icons.Delete, "删除", handleDelAction],
           ]}
         />
       ) : (
@@ -110,16 +116,9 @@ function EnumList(props: {
         title="编辑枚举类型"
         schema={MetaEnumSchema}
         defaultValues={editEnum!}
-        names={[
-          ["name", "名称"],
-          ["desc", "描述"],
-        ]}
+        names={MetaEnumNames}
         onCancel={() => setEditEnum(null)}
-        onSubmit={async (data) => {
-          const r = await props.onEdit(editEnum?.id!, data)
-          setEditEnum(null)
-          return r
-        }}
+        onSubmit={handleEditSubmit}
       />
       {/** 删除确认. */}
       <AlertDialog
@@ -127,10 +126,7 @@ function EnumList(props: {
         title="是否要删除枚举类型？"
         content="删除操作要小心."
         onNo={() => setDelEnum(null)}
-        onYes={() => {
-          setDelEnum(null)
-          props.onDelete(delEnum!)
-        }}
+        onYes={handleDeleteYes}
       />
     </>
   )
@@ -138,9 +134,7 @@ function EnumList(props: {
 
 function EnumItemTable(props: {}) {}
 
-type Props = {}
-
-const Page = (props: Props) => {
+const Page = () => {
   const [enumList, setEnumList] = useState<MetaEnumRecSchema[] | null>(null)
   const [curEnum, setCurEnum] = useState<MetaEnumRecSchema | null>(null)
 
@@ -153,7 +147,7 @@ const Page = (props: Props) => {
     fetchEnumList()
   }, [])
 
-  async function onCreateEnum(data: MetaEnumSchema) {
+  async function handleCreateEnum(data: MetaEnumSchema) {
     await fetch("/api/admin/enums", {
       method: "POST",
       headers: {
@@ -166,11 +160,11 @@ const Page = (props: Props) => {
     return null
   }
 
-  function onSelectEnum(e: MetaEnumRecSchema) {
+  function handleSelectEnum(e: MetaEnumRecSchema) {
     setCurEnum(e)
   }
 
-  async function onEditEnum(id: number, e: MetaEnumSchema) {
+  async function handleEditEnum(id: number, e: MetaEnumSchema) {
     const data: MetaEnumPatchSchema = { self: e }
     await fetch(`/api/admin/enums/${id}`, {
       method: "PATCH",
@@ -184,7 +178,7 @@ const Page = (props: Props) => {
     return null
   }
 
-  async function onDeleteEnum(e: MetaEnumRecSchema) {
+  async function handleDeleteEnum(e: MetaEnumRecSchema) {
     await fetch(`/api/admin/enums/${e.id}`, {
       method: "DELETE",
     })
@@ -197,13 +191,13 @@ const Page = (props: Props) => {
     <Box sx={{ display: "flex" }}>
       <Box sx={{ p: 2, width: 300 }}>
         <Stack spacing={2}>
-          <CreateEnumDialog disabled={!enumList} onCreate={onCreateEnum} />
+          <CreateEnumDialog disabled={!enumList} onCreate={handleCreateEnum} />
           <EnumList
             enumList={enumList}
             curEnum={curEnum}
-            onSelect={onSelectEnum}
-            onEdit={onEditEnum}
-            onDelete={onDeleteEnum}
+            onSelect={handleSelectEnum}
+            onEdit={handleEditEnum}
+            onDelete={handleDeleteEnum}
           />
         </Stack>
       </Box>
