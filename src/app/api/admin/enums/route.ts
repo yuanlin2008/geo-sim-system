@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import prisma from "@/lib/prisma"
-import { IDNameDescSchema, NameDescSchema } from "@/lib/schema"
+import { MetaEnumRecSchema, MetaEnumSchema } from "@/lib/schema"
 
 export async function GET() {
-  const enums: IDNameDescSchema[] = await prisma.metaEnum.findMany({
+  const enums: MetaEnumRecSchema[] = await prisma.metaEnum.findMany({
     select: {
       id: true,
       name: true,
@@ -15,7 +15,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const params = NameDescSchema.parse(await req.json())
+  const params = MetaEnumSchema.parse(await req.json())
   const me = await prisma.metaEnum.create({
     data: {
       name: params.name,

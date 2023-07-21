@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import prisma from "@/lib/prisma"
-import { ParamIDSchema, UpdateMetaEnumSchema } from "@/lib/schema"
+import {
+  MetaEnumItemRecSchema,
+  MetaEnumPatchSchema,
+  ParamIDSchema,
+} from "@/lib/schema"
 
 export async function DELETE(req: NextRequest, context: ParamIDSchema) {
   const { params } = ParamIDSchema.parse(context)
@@ -15,12 +19,9 @@ export async function DELETE(req: NextRequest, context: ParamIDSchema) {
 
 export async function GET(req: NextRequest, context: ParamIDSchema) {
   const { params } = ParamIDSchema.parse(context)
-  const e = await prisma.metaEnum.findUnique({
+  const e: MetaEnumItemRecSchema[] = await prisma.metaEnumItem.findMany({
     where: {
-      id: +params.id,
-    },
-    include: {
-      items: true,
+      ownerId: +params.id,
     },
   })
   return NextResponse.json(e)
@@ -29,15 +30,15 @@ export async function GET(req: NextRequest, context: ParamIDSchema) {
 export async function PATCH(req: NextRequest, context: ParamIDSchema) {
   const { params } = ParamIDSchema.parse(context)
   const id = +params.id
-  const updateParams = UpdateMetaEnumSchema.parse(await req.json())
-  if (updateParams.name || updateParams.desc) {
+  const updateParams = MetaEnumPatchSchema.parse(await req.json())
+  if (updateParams.self) {
     await prisma.metaEnum.update({
       where: {
         id: id,
       },
       data: {
-        name: updateParams.name,
-        desc: updateParams.desc,
+        name: updateParams.self.name,
+        desc: updateParams.self.desc,
       },
     })
   }

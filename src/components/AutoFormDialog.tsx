@@ -2,7 +2,7 @@
  * 根据Zod schema自动生成表单输入的对话框.
  */
 
-import React from "react"
+import React, { useEffect } from "react"
 import LoadingButton from "@mui/lab/LoadingButton"
 import Button from "@mui/material/Button"
 import Dialog from "@mui/material/Dialog"
@@ -36,6 +36,11 @@ function AutoFormDialog<ST extends z.ZodTypeAny, T = z.infer<ST>>({
   const form = useForm(schema, defaultValues)
   const [error, setError] = React.useState<string | null>(null)
   const [submitting, setSubmitting] = React.useState<boolean>(false)
+
+  // reset defaults.
+  useEffect(() => {
+    form.reset(defaultValues)
+  }, [defaultValues, form])
 
   function handleCancel() {
     form.reset()

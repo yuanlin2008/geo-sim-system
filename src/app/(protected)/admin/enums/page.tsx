@@ -15,18 +15,23 @@ import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 
-import { IDNameDescSchema, NameDescSchema } from "@/lib/schema"
+import {
+  MetaEnumPatchSchema,
+  MetaEnumRecSchema,
+  MetaEnumSchema,
+} from "@/lib/schema"
+import AlertDialog from "@/components/AlertDialog"
 import AutoFormDialog from "@/components/AutoFormDialog"
 import Icons from "@/components/Icons"
 
-const CreateEnumDefaults: NameDescSchema = {
+const CreateEnumDefaults: MetaEnumSchema = {
   name: "",
   desc: "",
 }
 
 function CreateEnumDialog(props: {
   disabled: boolean
-  onSubmit: (data: NameDescSchema) => Promise<string | null>
+  onCreate: (data: MetaEnumSchema) => Promise<string | null>
 }) {
   const [isOpen, setOpen] = useState(false)
   return (
@@ -45,15 +50,17 @@ function CreateEnumDialog(props: {
       <AutoFormDialog
         isOpen={isOpen}
         title="创建枚举类型"
-        schema={NameDescSchema}
+        schema={MetaEnumSchema}
         defaultValues={CreateEnumDefaults}
         names={[
           ["name", "名称"],
           ["desc", "描述"],
         ]}
-        onCancel={() => setOpen(false)}
+        onCancel={() => {
+          setOpen(false)
+        }}
         onSubmit={async (data) => {
-          const r = await props.onSubmit(data)
+          const r = await props.onCreate(data)
           setOpen(false)
           return r
         }}
@@ -63,17 +70,18 @@ function CreateEnumDialog(props: {
 }
 
 function EnumList(props: {
-  enumList: IDNameDescSchema[] | null
-  curEnum: IDNameDescSchema | null
-  onSelect: (e: IDNameDescSchema) => void
-  onEdit: (e: IDNameDescSchema) => Promise<string | null>
-  onDelete: (e: IDNameDescSchema) => Promise<string | null>
+  enumList: MetaEnumRecSchema[] | null
+  curEnum: MetaEnumRecSchema | null
+  onSelect: (e: MetaEnumRecSchema) => void
+  onEdit: (id: number, e: MetaEnumSchema) => Promise<string | null>
+  onDelete: (e: MetaEnumRecSchema) => void
 }) {
   const [menuContext, setMenuContext] = useState<{
     anchor: HTMLElement
-    selected: IDNameDescSchema
+    selected: MetaEnumRecSchema
   } | null>(null)
-  const [editEnum, setEditEnum] = useState<IDNameDescSchema | null>(null)
+  const [editEnum, setEditEnum] = useState<MetaEnumRecSchema | null>(null)
+  const [delEnum, setDelEnum] = useState<MetaEnumRecSchema | null>(null)
 
   return (
     <>
@@ -124,7 +132,7 @@ function EnumList(props: {
       >
         <MenuItem
           onClick={() => {
-            setEditEnum(menuContext?.selected as IDNameDescSchema)
+            setEditEnum(menuContext?.selected!)
             setMenuContext(null)
           }}
         >
@@ -133,7 +141,12 @@ function EnumList(props: {
           </ListItemIcon>
           <Typography>编辑</Typography>
         </MenuItem>
-        <MenuItem onClick={() => {}}>
+        <MenuItem
+          onClick={() => {
+            setDelEnum(menuContext?.selected!)
+            setMenuContext(null)
+          }}
+        >
           <ListItemIcon>
             <Icons.Delete />
           </ListItemIcon>
@@ -144,17 +157,28 @@ function EnumList(props: {
       <AutoFormDialog
         isOpen={!!editEnum}
         title="编辑枚举类型"
-        schema={NameDescSchema}
-        defaultValues={editEnum as IDNameDescSchema}
+        schema={MetaEnumSchema}
+        defaultValues={editEnum!}
         names={[
           ["name", "名称"],
           ["desc", "描述"],
         ]}
         onCancel={() => setEditEnum(null)}
         onSubmit={async (data) => {
-          const r = await props.onEdit(data)
+          const r = await props.onEdit(editEnum?.id!, data)
           setEditEnum(null)
           return r
+        }}
+      />
+      {/** 删除确认. */}
+      <AlertDialog
+        open={!!delEnum}
+        title="是否要删除枚举类型？"
+        content="删除操作要小心."
+        onNo={() => setDelEnum(null)}
+        onYes={() => {
+          setDelEnum(null)
+          props.onDelete(delEnum!)
         }}
       />
     </>
@@ -164,15 +188,19 @@ function EnumList(props: {
 type Props = {}
 
 const Page = (props: Props) => {
-  const [enumList, setEnumList] = useState<IDNameDescSchema[] | null>(null)
-  const [curEnum, setCurEnum] = useState<IDNameDescSchema | null>(null)
+  const [enumList, setEnumList] = useState<MetaEnumRecSchema[] | null>(null)
+  const [curEnum, setCurEnum] = useState<MetaEnumRecSchema | null>(null)
 
   async function fetchEnumList() {
     const r = await fetch("/api/admin/enums")
     setEnumList(await r.json())
   }
 
-  async function onCreateEnum(data: NameDescSchema) {
+  useEffect(() => {
+    fetchEnumList()
+  }, [])
+
+  async function onCreateEnum(data: MetaEnumSchema) {
     await fetch("/api/admin/enums", {
       method: "POST",
       headers: {
@@ -185,23 +213,44 @@ const Page = (props: Props) => {
     return null
   }
 
-  useEffect(() => {
-    fetchEnumList()
-  }, [])
-
-  function onSelectEnum(e: IDNameDescSchema) {
+  function onSelectEnum(e: MetaEnumRecSchema) {
     setCurEnum(e)
+  }
+
+  async function onEditEnum(id: number, e: MetaEnumSchema) {
+    const data: MetaEnumPatchSchema = { self: e }
+    await fetch(`/api/admin/enums/${id}`, {
+      method: "PATCH",
+      headers: {
+        "content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+    setEnumList(null)
+    await fetchEnumList()
+    return null
+  }
+
+  async function onDeleteEnum(e: MetaEnumRecSchema) {
+    await fetch(`/api/admin/enums/${e.id}`, {
+      method: "DELETE",
+    })
+    setEnumList(null)
+    await fetchEnumList()
+    return null
   }
 
   return (
     <Box sx={{ display: "flex" }}>
       <Box sx={{ p: 2, width: 300 }}>
         <Stack spacing={2}>
-          <CreateEnumDialog disabled={!enumList} onSubmit={onCreateEnum} />
+          <CreateEnumDialog disabled={!enumList} onCreate={onCreateEnum} />
           <EnumList
             enumList={enumList}
             curEnum={curEnum}
             onSelect={onSelectEnum}
+            onEdit={onEditEnum}
+            onDelete={onDeleteEnum}
           />
         </Stack>
       </Box>
