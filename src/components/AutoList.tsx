@@ -28,63 +28,76 @@ function AutoList<T>(props: {
     selected: T
   } | null>(null)
 
+  // 创建List item
+  function createListItem(item: T) {
+    function handleClick() {
+      props.onSelect(item)
+    }
+    function handleSecClick(
+      event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) {
+      setMenuContext({
+        anchor: event.currentTarget,
+        selected: item,
+      })
+    }
+    return (
+      <ListItem
+        key={item[props.keyName] as string}
+        disablePadding
+        disableGutters
+        secondaryAction={
+          <IconButton onClick={handleSecClick}>
+            <Icons.MoreH />
+          </IconButton>
+        }
+      >
+        <Tooltip title={item[props.tipName] as string} placement="right">
+          <ListItemButton
+            selected={item == props.selected}
+            onClick={handleClick}
+          >
+            <ListItemIcon>
+              <props.icon />
+            </ListItemIcon>
+            <ListItemText primary={item[props.textName] as string} />
+          </ListItemButton>
+        </Tooltip>
+      </ListItem>
+    )
+  }
+
+  // 创建Menu item
+  function createMenuItem([Icon, text, on]: [
+    icon: React.FC,
+    text: string,
+    on: (item: T) => void
+  ]) {
+    function handleClick() {
+      setMenuContext(null)
+      on(menuContext?.selected!)
+    }
+    return (
+      <MenuItem key={text} onClick={handleClick}>
+        <ListItemIcon>
+          <Icon />
+        </ListItemIcon>
+        <Typography>{text}</Typography>
+      </MenuItem>
+    )
+  }
+
   return (
     <>
-      <List dense>
-        {props.list.map((item) => (
-          <ListItem
-            key={item[props.keyName] as string}
-            disablePadding
-            disableGutters
-            secondaryAction={
-              <IconButton
-                onClick={(event) => {
-                  setMenuContext({
-                    anchor: event.currentTarget,
-                    selected: item,
-                  })
-                }}
-              >
-                <Icons.MoreH />
-              </IconButton>
-            }
-          >
-            <Tooltip title={item[props.tipName] as string} placement="right">
-              <ListItemButton
-                selected={item == props.selected}
-                onClick={() => {
-                  props.onSelect(item)
-                }}
-              >
-                <ListItemIcon>
-                  <props.icon />
-                </ListItemIcon>
-                <ListItemText primary={item[props.textName] as string} />
-              </ListItemButton>
-            </Tooltip>
-          </ListItem>
-        ))}
-      </List>
+      {/** 列表 */}
+      <List dense>{props.list.map(createListItem)}</List>
       {/** 弹出菜单. */}
       <Menu
         open={!!menuContext}
         anchorEl={menuContext?.anchor}
         onClose={() => setMenuContext(null)}
       >
-        {props.onAction.map(([Icon, text, on]) => (
-          <MenuItem
-            key={text}
-            onClick={() => {
-              setMenuContext(null)
-              on(menuContext?.selected!)
-            }}
-          >
-            <ListItemIcon>
-              <Icon />
-            </ListItemIcon>
-            <Typography>{text}</Typography>
-          </MenuItem>
-        ))}
+        {props.onAction.map(createMenuItem)}
       </Menu>
     </>
   )
