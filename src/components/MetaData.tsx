@@ -92,7 +92,7 @@ type MetaDataMethods = {
 }
 
 type MetaDataContextType = {
-  data: MetaData
+  data: MetaData | null
 } & MetaDataMethods
 
 async function post(body: MetaDataOperation) {
@@ -106,35 +106,140 @@ async function post(body: MetaDataOperation) {
   return await r.json()
 }
 
-async function createEnum(data: MetaData, input: MetaEnumInput) {
-  const r = await post({ type: "createEnum", input })
-}
-
 const MetaDataContext = React.createContext<MetaDataContextType | null>(null)
 
-export function MetaDataProvider() {
-  const [context, setContext] = React.useState<MetaDataContextType | null>(null)
+export function MetaDataProvider({ children }: { children: React.ReactNode }) {
+  const [data, setData] = React.useState<MetaData | null>(null)
 
   async function fetchData() {
     const r = await fetch("/api/metadata")
-    const data = (await r.json()) as MetaData
-    initMetaData(data)
-    setContext({
-      data,
-      createEnum: async (input) => {},
-    })
+    const newData = (await r.json()) as MetaData
+    initMetaData(newData)
+    setData({ ...newData })
   }
 
   // Fetch data.
   React.useEffect(() => {
+    console.log("useEffect")
     fetchData()
   }, [])
 
-  return <MetaDataContext.Provider value={data}></MetaDataContext.Provider>
+  function resetData(d: MetaData) {
+    initMetaData(d)
+    setData({ ...d })
+  }
+
+  const context: MetaDataContextType = {
+    data,
+    async createEnum(input) {
+      if (!data) return false
+      const r = (await post({ type: "createEnum", input })) as MetaEnum
+      data.metaEnums.push(r)
+      resetData(data)
+      return true
+    },
+    async updateEnum(id, input) {
+      if (!data) return false
+      await post({ type: "updateEnum", id, input })
+      data.metaEnums = data.metaEnums.map((e) =>
+        e.id == id ? { ...e, ...input } : e
+      )
+      resetData(data)
+      return true
+    },
+    async deleteEnum(id) {
+      if (!data) return false
+      await post({ type: "deleteEnum", id })
+      data.metaEnums = data.metaEnums.filter((e) => e.id != id)
+      resetData(data)
+      return true
+    },
+    async createEnumItem(input, ownerId) {
+      if (!data) return false
+      const r = (await post({
+        type: "createEnumItem",
+        input,
+        ownerId,
+      })) as MetaEnumItem
+      data.metaEnumItems.push(r)
+      resetData(data)
+      return true
+    },
+    async updateEnumItem(id, input) {
+      if (!data) return false
+      await post({ type: "updateEnumItem", id, input })
+      data.metaEnumItems = data.metaEnumItems.map((e) =>
+        e.id == id ? { ...e, ...input } : e
+      )
+      resetData(data)
+      return true
+    },
+    async deleteEnumItem(id) {
+      if (!data) return false
+      await post({ type: "deleteEnumItem", id })
+      data.metaEnumItems = data.metaEnumItems.filter((e) => e.id != id)
+      resetData(data)
+      return true
+    },
+    async createField(input, ownerId) {
+      if (!data) return false
+      const r = (await post({
+        type: "createField",
+        input,
+        ownerId,
+      })) as MetaField
+      data.metaFields.push(r)
+      resetData(data)
+      return true
+    },
+    async updateField(id, input) {
+      if (!data) return false
+      await post({ type: "updateField", id, input })
+      data.metaFields = data.metaFields.map((e) =>
+        e.id == id ? { ...e, ...input } : e
+      )
+      resetData(data)
+      return true
+    },
+    async deleteField(id) {
+      if (!data) return false
+      await post({ type: "deleteField", id })
+      data.metaFields = data.metaFields.filter((e) => e.id != id)
+      resetData(data)
+      return true
+    },
+    async createStruct(input) {
+      if (!data) return false
+      const r = (await post({ type: "createStruct", input })) as MetaStruct
+      data.metaStructs.push(r)
+      resetData(data)
+      return true
+    },
+    async updateStruct(id, input) {
+      if (!data) return false
+      await post({ type: "updateStruct", id, input })
+      data.metaStructs = data.metaStructs.map((e) =>
+        e.id == id ? { ...e, ...input } : e
+      )
+      resetData(data)
+      return true
+    },
+    async deleteStruct(id) {
+      if (!data) return false
+      await post({ type: "deleteStruct", id })
+      data.metaStructs = data.metaStructs.filter((e) => e.id != id)
+      resetData(data)
+      return true
+    },
+  }
+
+  return (
+    <MetaDataContext.Provider value={context}>
+      {children}
+    </MetaDataContext.Provider>
+  )
 }
 
-type Props = {}
-
-const MetaData = (props: Props) => {
-  return <div>MetaData</div>
+export function useMetaData() {
+  return React.useContext(MetaDataContext)
 }
