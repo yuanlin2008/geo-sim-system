@@ -68,7 +68,7 @@ model VerificationToken {
 model MetaEnum {
   id            Int            @id @default(autoincrement())
   name          String         @unique
-  desc          String         @default("")
+  desc          String
   /// 从属于此enum的所有item.
   items         MetaEnumItem[] @relation("MetaEnum.items")
   /// 此enum类型的所有MetaField
@@ -78,7 +78,7 @@ model MetaEnum {
 /// 枚举项元数据.
 model MetaEnumItem {
   id        Int         @id @default(autoincrement())
-  name      String      @default("")
+  name      String
   desc      String
   /// Owner
   owner     MetaEnum    @relation("MetaEnum.items", fields: [ownerId], references: [id])
@@ -91,7 +91,7 @@ model MetaEnumItem {
 model MetaStruct {
   id            Int          @id @default(autoincrement())
   name          String       @unique
-  desc          String       @default("")
+  desc          String
   metaFields    MetaField[]  @relation("MetaStruct.metaFields")
   /// 此类型的所有MetaField
   metaFieldRefs MetaField[]  @relation("MetaField.typeStruct")
@@ -112,7 +112,7 @@ enum MetaFieldType {
 model MetaField {
   id           Int           @id @default(autoincrement())
   name         String
-  desc         String        @default("")
+  desc         String
   /// Owner
   owner        MetaStruct    @relation("MetaStruct.metaFields", fields: [ownerId], references: [id])
   ownerId      Int
@@ -130,6 +130,8 @@ model MetaField {
 /// 结构体数据
 model DataStruct {
   id            Int         @id @default(autoincrement())
+  name          String      @unique
+  desc          String
   // Meta
   meta          MetaStruct  @relation("DataStruct.meta", fields: [metaId], references: [id])
   metaId        Int
@@ -149,12 +151,13 @@ model DataField {
   owner       DataStruct    @relation("DataStruct.dataFields", fields: [ownerId], references: [id])
   ownerId     Int
   // Values.
+  valueInt    Int?
+  valueFloat  Float?
+  valueString String?
+  valueEnum   MetaEnumItem? @relation("DataField.enumValue", fields: [valueEnumId], references: [id])
+  valueEnumId Int?
+  valueRef    DataStruct?   @relation("DataField.refValue", fields: [valueRefId], references: [id])
+  valueRefId  Int?
+  // Array.
   arrayId     Int?
-  intValue    Int?
-  floatValue  Float?
-  stringValue String?
-  enumValue   MetaEnumItem? @relation("DataField.enumValue", fields: [enumValueId], references: [id])
-  enumValueId Int?
-  refValue    DataStruct?   @relation("DataField.refValue", fields: [refValueId], references: [id])
-  refValueId  Int?
 }
