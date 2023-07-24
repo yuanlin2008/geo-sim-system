@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
         where: { id: op.id },
         data: { ...op.input },
       })
+      return new NextResponse()
     }
     case "deleteEnum": {
       await prisma.metaEnum.delete({

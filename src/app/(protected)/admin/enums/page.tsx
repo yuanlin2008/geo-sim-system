@@ -6,36 +6,31 @@ import Button from "@mui/material/Button"
 import Skeleton from "@mui/material/Skeleton"
 import Stack from "@mui/material/Stack"
 
-import {
-  MetaEnumPatchSchema,
-  MetaEnumRecSchema,
-  MetaEnumSchema,
-} from "@/lib/schema"
+import { MetaEnumInput, MetaEnumItemInput } from "@/lib/schema"
 import AlertDialog from "@/components/AlertDialog"
 import AutoFormDialog from "@/components/AutoFormDialog"
 import AutoList from "@/components/AutoList"
 import Icons from "@/components/Icons"
+import { MetaEnum, useMetaData } from "@/components/MetaData"
 
-const CreateEnumDefaults: MetaEnumSchema = {
+const CreateEnumDefaults: MetaEnumInput = {
   name: "",
   desc: "",
 }
 
-const MetaEnumNames: Array<[keyof MetaEnumSchema, string]> = [
+const MetaEnumNames: Array<[keyof MetaEnumInput, string]> = [
   ["name", "名称"],
   ["desc", "描述"],
 ]
 
-function CreateEnumDialog(props: {
-  disabled: boolean
-  onCreate: (data: MetaEnumSchema) => Promise<string | null>
-}) {
+function CreateEnumDialog(props: { disabled: boolean }) {
   const [isOpen, setOpen] = useState(false)
+  const { createEnum } = useMetaData()
 
-  async function handleSubmit(e: MetaEnumSchema) {
-    const r = await props.onCreate(e)
+  async function handleSubmit(e: MetaEnumInput) {
+    const r = await createEnum(e)
     setOpen(false)
-    return r
+    return r ? null : "Error"
   }
 
   return (
@@ -54,7 +49,7 @@ function CreateEnumDialog(props: {
       <AutoFormDialog
         isOpen={isOpen}
         title="创建枚举类型"
-        schema={MetaEnumSchema}
+        schema={MetaEnumInput}
         defaultValues={CreateEnumDefaults}
         names={MetaEnumNames}
         onCancel={() => setOpen(false)}
@@ -65,35 +60,33 @@ function CreateEnumDialog(props: {
 }
 
 function EnumList(props: {
-  enumList: MetaEnumRecSchema[] | null
-  curEnum: MetaEnumRecSchema | null
-  onSelect: (e: MetaEnumRecSchema) => void
-  onEdit: (id: number, e: MetaEnumSchema) => Promise<string | null>
-  onDelete: (e: MetaEnumRecSchema) => void
+  curEnum: MetaEnum | null
+  onSelect: (e: MetaEnum) => void
 }) {
-  const [editEnum, setEditEnum] = useState<MetaEnumRecSchema | null>(null)
-  const [delEnum, setDelEnum] = useState<MetaEnumRecSchema | null>(null)
+  const [editEnum, setEditEnum] = useState<MetaEnum | null>(null)
+  const [delEnum, setDelEnum] = useState<MetaEnum | null>(null)
+  const { data, updateEnum, deleteEnum } = useMetaData()
 
-  function handleEditAction(e: MetaEnumRecSchema) {
+  function handleEditAction(e: MetaEnum) {
     setEditEnum(e)
   }
-  function handleDelAction(e: MetaEnumRecSchema) {
+  function handleDelAction(e: MetaEnum) {
     setDelEnum(e)
   }
-  async function handleEditSubmit(e: MetaEnumSchema) {
-    const r = await props.onEdit(editEnum?.id!, e)
+  async function handleEditSubmit(e: MetaEnumInput) {
+    const r = await updateEnum(editEnum?.id!, e)
     setEditEnum(null)
-    return r
+    return r ? null : "Error"
   }
   function handleDeleteYes() {
     setDelEnum(null)
-    props.onDelete(delEnum!)
+    deleteEnum(delEnum!.id)
   }
   return (
     <>
-      {props.enumList ? (
+      {data ? (
         <AutoList
-          list={props.enumList!}
+          list={data.metaEnums}
           keyName={"id"}
           textName={"name"}
           tipName={"desc"}
@@ -114,7 +107,7 @@ function EnumList(props: {
       <AutoFormDialog
         isOpen={!!editEnum}
         title="编辑枚举类型"
-        schema={MetaEnumSchema}
+        schema={MetaEnumInput}
         defaultValues={editEnum!}
         names={MetaEnumNames}
         onCancel={() => setEditEnum(null)}
@@ -135,70 +128,19 @@ function EnumList(props: {
 function EnumItemTable(props: {}) {}
 
 const Page = () => {
-  const [enumList, setEnumList] = useState<MetaEnumRecSchema[] | null>(null)
-  const [curEnum, setCurEnum] = useState<MetaEnumRecSchema | null>(null)
+  const [curEnum, setCurEnum] = useState<MetaEnum | null>(null)
+  const { data } = useMetaData()
 
-  async function fetchEnumList() {
-    const r = await fetch("/api/admin/enums")
-    setEnumList(await r.json())
-  }
-
-  useEffect(() => {
-    fetchEnumList()
-  }, [])
-
-  async function handleCreateEnum(data: MetaEnumSchema) {
-    await fetch("/api/admin/enums", {
-      method: "POST",
-      headers: {
-        "content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-    setEnumList(null)
-    await fetchEnumList()
-    return null
-  }
-
-  function handleSelectEnum(e: MetaEnumRecSchema) {
+  function handleSelectEnum(e: MetaEnum) {
     setCurEnum(e)
-  }
-
-  async function handleEditEnum(id: number, e: MetaEnumSchema) {
-    const data: MetaEnumPatchSchema = { self: e }
-    await fetch(`/api/admin/enums/${id}`, {
-      method: "PATCH",
-      headers: {
-        "content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-    setEnumList(null)
-    await fetchEnumList()
-    return null
-  }
-
-  async function handleDeleteEnum(e: MetaEnumRecSchema) {
-    await fetch(`/api/admin/enums/${e.id}`, {
-      method: "DELETE",
-    })
-    setEnumList(null)
-    await fetchEnumList()
-    return null
   }
 
   return (
     <Box sx={{ display: "flex" }}>
       <Box sx={{ p: 2, width: 300 }}>
         <Stack spacing={2}>
-          <CreateEnumDialog disabled={!enumList} onCreate={handleCreateEnum} />
-          <EnumList
-            enumList={enumList}
-            curEnum={curEnum}
-            onSelect={handleSelectEnum}
-            onEdit={handleEditEnum}
-            onDelete={handleDeleteEnum}
-          />
+          <CreateEnumDialog disabled={!data} />
+          <EnumList curEnum={curEnum} onSelect={handleSelectEnum} />
         </Stack>
       </Box>
       <Box sx={{ p: 2, flexGrow: 1, height: "100%" }}>hahahaha</Box>

@@ -1,7 +1,8 @@
+"use client"
+
 /**
  * 元数据上下文.
  */
-
 import React from "react"
 import {
   MetaEnum,
@@ -95,24 +96,54 @@ type MetaDataContextType = {
   data: MetaData | null
 } & MetaDataMethods
 
-async function post(body: MetaDataOperation) {
-  const r = await fetch("/api/admin/metadata", {
-    method: "POST",
-    headers: {
-      "content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  })
-  return await r.json()
+const DefaultContext: MetaDataContextType = {
+  data: null,
+
+  async createEnum(input) {
+    return Promise.resolve(false)
+  },
+  async updateEnum(id, input) {
+    return Promise.resolve(false)
+  },
+  async deleteEnum(id: number) {
+    return Promise.resolve(false)
+  },
+  async createEnumItem(input, ownerId) {
+    return Promise.resolve(false)
+  },
+  async updateEnumItem(id: number, input: MetaEnumItemInput) {
+    return Promise.resolve(false)
+  },
+  async deleteEnumItem(id: number) {
+    return Promise.resolve(false)
+  },
+  async createField(input: MetaFieldInput, ownerId: number) {
+    return Promise.resolve(false)
+  },
+  async updateField(id: number, input: MetaFieldInput) {
+    return Promise.resolve(false)
+  },
+  async deleteField(id: number) {
+    return Promise.resolve(false)
+  },
+  async createStruct(input: MetaStructInput) {
+    return Promise.resolve(false)
+  },
+  async updateStruct(id: number, input: MetaStructInput) {
+    return Promise.resolve(false)
+  },
+  async deleteStruct(id: number) {
+    return Promise.resolve(false)
+  },
 }
 
-const MetaDataContext = React.createContext<MetaDataContextType | null>(null)
+const MetaDataContext = React.createContext<MetaDataContextType>(DefaultContext)
 
 export function MetaDataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = React.useState<MetaData | null>(null)
 
   async function fetchData() {
-    const r = await fetch("/api/metadata")
+    const r = await fetch("/api/admin/metadata")
     const newData = (await r.json()) as MetaData
     initMetaData(newData)
     setData({ ...newData })
@@ -120,7 +151,6 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch data.
   React.useEffect(() => {
-    console.log("useEffect")
     fetchData()
   }, [])
 
@@ -129,17 +159,34 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
     setData({ ...d })
   }
 
+  async function post(body: MetaDataOperation) {
+    return await fetch("/api/admin/metadata", {
+      method: "POST",
+      headers: {
+        "content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+  }
+
+  if (!data) {
+    return (
+      <MetaDataContext.Provider value={DefaultContext}>
+        {children}
+      </MetaDataContext.Provider>
+    )
+  }
+
   const context: MetaDataContextType = {
     data,
     async createEnum(input) {
-      if (!data) return false
-      const r = (await post({ type: "createEnum", input })) as MetaEnum
-      data.metaEnums.push(r)
+      const r = await post({ type: "createEnum", input })
+      const o = await r.json()
+      data.metaEnums.push(o)
       resetData(data)
       return true
     },
     async updateEnum(id, input) {
-      if (!data) return false
       await post({ type: "updateEnum", id, input })
       data.metaEnums = data.metaEnums.map((e) =>
         e.id == id ? { ...e, ...input } : e
@@ -148,25 +195,19 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
       return true
     },
     async deleteEnum(id) {
-      if (!data) return false
       await post({ type: "deleteEnum", id })
       data.metaEnums = data.metaEnums.filter((e) => e.id != id)
       resetData(data)
       return true
     },
     async createEnumItem(input, ownerId) {
-      if (!data) return false
-      const r = (await post({
-        type: "createEnumItem",
-        input,
-        ownerId,
-      })) as MetaEnumItem
-      data.metaEnumItems.push(r)
+      const r = await post({ type: "createEnumItem", input, ownerId })
+      const o = await r.json()
+      data.metaEnumItems.push(o)
       resetData(data)
       return true
     },
     async updateEnumItem(id, input) {
-      if (!data) return false
       await post({ type: "updateEnumItem", id, input })
       data.metaEnumItems = data.metaEnumItems.map((e) =>
         e.id == id ? { ...e, ...input } : e
@@ -175,25 +216,19 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
       return true
     },
     async deleteEnumItem(id) {
-      if (!data) return false
       await post({ type: "deleteEnumItem", id })
       data.metaEnumItems = data.metaEnumItems.filter((e) => e.id != id)
       resetData(data)
       return true
     },
     async createField(input, ownerId) {
-      if (!data) return false
-      const r = (await post({
-        type: "createField",
-        input,
-        ownerId,
-      })) as MetaField
-      data.metaFields.push(r)
+      const r = await post({ type: "createField", input, ownerId })
+      const o = await r.json()
+      data.metaFields.push(o)
       resetData(data)
       return true
     },
     async updateField(id, input) {
-      if (!data) return false
       await post({ type: "updateField", id, input })
       data.metaFields = data.metaFields.map((e) =>
         e.id == id ? { ...e, ...input } : e
@@ -202,21 +237,19 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
       return true
     },
     async deleteField(id) {
-      if (!data) return false
       await post({ type: "deleteField", id })
       data.metaFields = data.metaFields.filter((e) => e.id != id)
       resetData(data)
       return true
     },
     async createStruct(input) {
-      if (!data) return false
-      const r = (await post({ type: "createStruct", input })) as MetaStruct
-      data.metaStructs.push(r)
+      const r = await post({ type: "createStruct", input })
+      const o = await r.json()
+      data.metaStructs.push(o)
       resetData(data)
       return true
     },
     async updateStruct(id, input) {
-      if (!data) return false
       await post({ type: "updateStruct", id, input })
       data.metaStructs = data.metaStructs.map((e) =>
         e.id == id ? { ...e, ...input } : e
@@ -225,7 +258,6 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
       return true
     },
     async deleteStruct(id) {
-      if (!data) return false
       await post({ type: "deleteStruct", id })
       data.metaStructs = data.metaStructs.filter((e) => e.id != id)
       resetData(data)

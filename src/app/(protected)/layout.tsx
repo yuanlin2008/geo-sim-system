@@ -2,6 +2,7 @@ import React from "react"
 import Box from "@mui/material/Box"
 
 import AppBar from "@/components/AppBar"
+import { MetaDataProvider } from "@/components/MetaData"
 import SessionProvider from "@/components/SessionProvider"
 
 export default async function Layout({
@@ -11,10 +12,12 @@ export default async function Layout({
 }) {
   return (
     <SessionProvider>
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-        <AppBar />
-        {children}
-      </Box>
+      <MetaDataProvider>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+          <AppBar />
+          {children}
+        </Box>
+      </MetaDataProvider>
     </SessionProvider>
   )
 }
