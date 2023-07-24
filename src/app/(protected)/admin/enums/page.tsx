@@ -61,7 +61,7 @@ function CreateEnumDialog(props: { disabled: boolean }) {
 
 function EnumList(props: {
   curEnum: MetaEnum | null
-  onSelect: (e: MetaEnum) => void
+  onSelect: (e: MetaEnum | null) => void
 }) {
   const [editEnum, setEditEnum] = useState<MetaEnum | null>(null)
   const [delEnum, setDelEnum] = useState<MetaEnum | null>(null)
@@ -73,14 +73,17 @@ function EnumList(props: {
   function handleDelAction(e: MetaEnum) {
     setDelEnum(e)
   }
-  async function handleEditSubmit(e: MetaEnumInput) {
+  async function handleEdit(e: MetaEnumInput) {
     const r = await updateEnum(editEnum?.id!, e)
     setEditEnum(null)
     return r ? null : "Error"
   }
-  function handleDeleteYes() {
+  function handleDelete() {
     setDelEnum(null)
     deleteEnum(delEnum!.id)
+    if (props.curEnum == delEnum) {
+      props.onSelect(null)
+    }
   }
   return (
     <>
@@ -111,7 +114,7 @@ function EnumList(props: {
         defaultValues={editEnum!}
         names={MetaEnumNames}
         onCancel={() => setEditEnum(null)}
-        onSubmit={handleEditSubmit}
+        onSubmit={handleEdit}
       />
       {/** 删除确认. */}
       <AlertDialog
@@ -119,7 +122,7 @@ function EnumList(props: {
         title="是否要删除枚举类型？"
         content="删除操作要小心."
         onNo={() => setDelEnum(null)}
-        onYes={handleDeleteYes}
+        onYes={handleDelete}
       />
     </>
   )
@@ -131,7 +134,7 @@ const Page = () => {
   const [curEnum, setCurEnum] = useState<MetaEnum | null>(null)
   const { data } = useMetaData()
 
-  function handleSelectEnum(e: MetaEnum) {
+  function handleSelectEnum(e: MetaEnum | null) {
     setCurEnum(e)
   }
 
