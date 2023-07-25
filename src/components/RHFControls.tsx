@@ -26,6 +26,15 @@ export function RHFTextField<T extends FieldValues>(
   )
 }
 
+/**
+ * 
+  <FormControl disabled={isLoading} fullWidth margin="normal">
+    <FormControlLabel
+      label="测试一下这个"
+      control={<RHFCheckbox name="test" />}
+    />
+  </FormControl>
+ */
 type RHFCheckboxProps<T extends FieldValues> = Omit<
   CheckboxProps,
   "name" | "inputRef" | "onChange" | "value" | "onBlur" | "helperText" | "error"
@@ -40,7 +49,7 @@ export function RHFCheckbox<T extends FieldValues>(props: RHFCheckboxProps<T>) {
       name={field.name}
       inputRef={field.ref}
       onChange={field.onChange}
-      value={field.value}
+      checked={field.value}
       onBlur={field.onBlur}
     />
   )
