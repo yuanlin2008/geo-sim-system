@@ -12,7 +12,7 @@ import AutoFormDialog from "@/components/AutoFormDialog"
 import AutoList from "@/components/AutoList"
 import AutoTable from "@/components/AutoTable"
 import Icons from "@/components/Icons"
-import { MetaEnum, useMetaData } from "@/components/MetaData"
+import { MetaEnum, MetaEnumItem, useMetaData } from "@/components/MetaData"
 
 const CreateEnumDefaults: MetaEnumInput = {
   name: "",
@@ -174,23 +174,60 @@ function CreateEnumItemDialog(props: { curEnum: MetaEnum }) {
 }
 
 function EnumItemTable(props: { curEnum: MetaEnum }) {
-  const { data } = useMetaData()
+  const [editEnumItem, setEditEnumItem] = useState<MetaEnum | null>(null)
+  const [delEnumItem, setDelEnumItem] = useState<MetaEnum | null>(null)
+  const { data, updateEnumItem, deleteEnumItem } = useMetaData()
+
+  function handleEditAction(e: MetaEnumItem) {
+    setEditEnumItem(e)
+  }
+  function handleDelAction(e: MetaEnumItem) {
+    setDelEnumItem(e)
+  }
+  async function handleEdit(e: MetaEnumItemInput) {
+    const r = await updateEnumItem(editEnumItem?.id!, e)
+    setEditEnumItem(null)
+    return r ? null : "Error"
+  }
+  function handleDelete() {
+    setDelEnumItem(null)
+    deleteEnumItem(delEnumItem!.id)
+  }
+
   if (!data) return null
   const itemList = data.metaEnumId2ItemMap.get(props.curEnum.id)
   if (!itemList) return null
 
-  function handleEditAction(e: MetaEnum) {}
-  function handleDelAction(e: MetaEnum) {}
   return (
-    <AutoTable
-      list={itemList}
-      keyName="id"
-      columns={MetaEnumItemNames}
-      onAction={[
-        [Icons.Edit, "编辑", handleEditAction],
-        [Icons.Delete, "删除", handleDelAction],
-      ]}
-    />
+    <>
+      <AutoTable
+        list={itemList}
+        keyName="id"
+        columns={MetaEnumItemNames}
+        onAction={[
+          [Icons.Edit, "编辑", handleEditAction],
+          [Icons.Delete, "删除", handleDelAction],
+        ]}
+      />
+      {/** 编辑对话框 */}
+      <AutoFormDialog
+        isOpen={!!editEnumItem}
+        title="编辑枚举项"
+        schema={MetaEnumInput}
+        defaultValues={editEnumItem!}
+        names={MetaEnumNames}
+        onCancel={() => setEditEnumItem(null)}
+        onSubmit={handleEdit}
+      />
+      {/** 删除确认. */}
+      <AlertDialog
+        open={!!delEnumItem}
+        title="是否要删除枚举项？"
+        content="删除操作要小心."
+        onNo={() => setDelEnumItem(null)}
+        onYes={handleDelete}
+      />
+    </>
   )
 }
 
