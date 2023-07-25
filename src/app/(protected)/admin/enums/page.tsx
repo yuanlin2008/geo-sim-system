@@ -8,21 +8,89 @@ import Stack from "@mui/material/Stack"
 
 import { MetaEnumInput, MetaEnumItemInput } from "@/lib/schema"
 import AlertDialog from "@/components/AlertDialog"
-import AutoFormDialog from "@/components/AutoFormDialog"
 import AutoList from "@/components/AutoList"
 import AutoTable from "@/components/AutoTable"
 import Icons from "@/components/Icons"
 import { MetaEnum, MetaEnumItem, useMetaData } from "@/components/MetaData"
+import { RHFTextField } from "@/components/RHFControls"
+import RHFDialog from "@/components/RHFDialog"
+
+function MetaEnumInputDialog(props: {
+  isOpen: boolean
+  defaultValues: MetaEnumInput
+  onCancel: () => void
+  onSubmit: (data: MetaEnumInput) => Promise<null | string>
+}) {
+  return (
+    <RHFDialog
+      isOpen={props.isOpen}
+      title="枚举类型"
+      schema={MetaEnumInput}
+      defaultValues={props.defaultValues}
+      onCancel={props.onCancel}
+      onSubmit={props.onSubmit}
+    >
+      <RHFTextField
+        margin="dense"
+        label={"名称"}
+        name={"name"}
+        size="small"
+        fullWidth
+        autoComplete="off"
+      />
+      <RHFTextField
+        margin="dense"
+        label={"描述"}
+        name={"desc"}
+        size="small"
+        fullWidth
+        multiline
+        autoComplete="off"
+      />
+    </RHFDialog>
+  )
+}
+
+function MetaEnumItemInputDialog(props: {
+  isOpen: boolean
+  defaultValues: MetaEnumItemInput
+  onCancel: () => void
+  onSubmit: (data: MetaEnumItemInput) => Promise<null | string>
+}) {
+  return (
+    <RHFDialog
+      isOpen={props.isOpen}
+      title="枚举项"
+      schema={MetaEnumItemInput}
+      defaultValues={props.defaultValues}
+      onCancel={props.onCancel}
+      onSubmit={props.onSubmit}
+    >
+      <RHFTextField
+        margin="dense"
+        label={"名称"}
+        name={"name"}
+        size="small"
+        fullWidth
+        autoComplete="off"
+      />
+      <RHFTextField
+        margin="dense"
+        label={"描述"}
+        name={"desc"}
+        size="small"
+        fullWidth
+        multiline
+        autoComplete="off"
+      />
+    </RHFDialog>
+  )
+}
 
 const CreateEnumDefaults: MetaEnumInput = {
   name: "",
   desc: "",
 }
-
-const MetaEnumNames: Array<[keyof MetaEnumInput, string]> = [
-  ["name", "名称"],
-  ["desc", "描述"],
-]
 
 function CreateEnumDialog(props: { disabled: boolean }) {
   const [isOpen, setOpen] = useState(false)
@@ -47,12 +115,9 @@ function CreateEnumDialog(props: { disabled: boolean }) {
       >
         新建枚举类型
       </Button>
-      <AutoFormDialog
+      <MetaEnumInputDialog
         isOpen={isOpen}
-        title="创建枚举类型"
-        schema={MetaEnumInput}
         defaultValues={CreateEnumDefaults}
-        names={MetaEnumNames}
         onCancel={() => setOpen(false)}
         onSubmit={handleSubmit}
       />
@@ -108,12 +173,9 @@ function EnumList(props: {
         </Stack>
       )}
       {/** 编辑对话框 */}
-      <AutoFormDialog
+      <MetaEnumInputDialog
         isOpen={!!editEnum}
-        title="编辑枚举类型"
-        schema={MetaEnumInput}
         defaultValues={editEnum!}
-        names={MetaEnumNames}
         onCancel={() => setEditEnum(null)}
         onSubmit={handleEdit}
       />
@@ -160,12 +222,9 @@ function CreateEnumItemDialog(props: { curEnum: MetaEnum }) {
       >
         新建枚举项
       </Button>
-      <AutoFormDialog
+      <MetaEnumItemInputDialog
         isOpen={isOpen}
-        title="创建枚举项"
-        schema={MetaEnumItemInput}
         defaultValues={CreateEnumItemDefaults}
-        names={MetaEnumItemNames}
         onCancel={() => setOpen(false)}
         onSubmit={handleSubmit}
       />
@@ -210,12 +269,9 @@ function EnumItemTable(props: { curEnum: MetaEnum }) {
         ]}
       />
       {/** 编辑对话框 */}
-      <AutoFormDialog
+      <MetaEnumItemInputDialog
         isOpen={!!editEnumItem}
-        title="编辑枚举项"
-        schema={MetaEnumInput}
         defaultValues={editEnumItem!}
-        names={MetaEnumNames}
         onCancel={() => setEditEnumItem(null)}
         onSubmit={handleEdit}
       />

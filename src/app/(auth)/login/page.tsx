@@ -13,7 +13,7 @@ import { signIn } from "next-auth/react"
 import { FormProvider, useForm } from "react-hook-form"
 
 import { UserLoginSchema } from "@/lib/schema"
-import { RHFTextField } from "@/components/RHFControls"
+import { DisabledProvider, RHFTextField } from "@/components/RHFControls"
 
 const Login = () => {
   const [isLoading, setIsLoading] = React.useState(false)
@@ -40,26 +40,26 @@ const Login = () => {
     return (
       <Box component="form" onSubmit={form.handleSubmit(onSubmit)}>
         <FormProvider {...form}>
-          <RHFTextField
-            disabled={isLoading}
-            margin="normal"
-            fullWidth
-            label="用户名"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            size="small"
-          />
-          <RHFTextField
-            disabled={isLoading}
-            margin="normal"
-            fullWidth
-            name="password"
-            label="密码"
-            type="password"
-            autoComplete="current-password"
-            size="small"
-          />
+          <DisabledProvider disabled={isLoading}>
+            <RHFTextField
+              margin="normal"
+              fullWidth
+              label="用户名"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              size="small"
+            />
+            <RHFTextField
+              margin="normal"
+              fullWidth
+              name="password"
+              label="密码"
+              type="password"
+              autoComplete="current-password"
+              size="small"
+            />
+          </DisabledProvider>
         </FormProvider>
         <LoadingButton
           loading={isLoading && provider == "credentials"}

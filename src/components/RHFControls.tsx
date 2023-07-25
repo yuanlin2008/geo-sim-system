@@ -1,6 +1,20 @@
+import React, { useContext } from "react"
 import Checkbox, { CheckboxProps } from "@mui/material/Checkbox"
 import TextField, { TextFieldProps } from "@mui/material/TextField"
 import { FieldValues, useController, UseControllerProps } from "react-hook-form"
+
+const DisabledContext = React.createContext<boolean>(false)
+
+export function DisabledProvider({
+  children,
+  disabled,
+}: React.PropsWithChildren<{ disabled: boolean }>) {
+  return (
+    <DisabledContext.Provider value={disabled}>
+      {children}
+    </DisabledContext.Provider>
+  )
+}
 
 type RHFTextFieldProps<T extends FieldValues> = Omit<
   TextFieldProps,
@@ -12,8 +26,10 @@ export function RHFTextField<T extends FieldValues>(
   props: RHFTextFieldProps<T>
 ) {
   const { field, fieldState } = useController(props)
+  const disabled = useContext(DisabledContext)
   return (
     <TextField
+      disabled={disabled}
       {...props}
       name={field.name}
       inputRef={field.ref}
@@ -42,9 +58,11 @@ type RHFCheckboxProps<T extends FieldValues> = Omit<
   UseControllerProps<T>
 
 export function RHFCheckbox<T extends FieldValues>(props: RHFCheckboxProps<T>) {
-  const { field, fieldState } = useController(props)
+  const { field } = useController(props)
+  const disabled = useContext(DisabledContext)
   return (
     <Checkbox
+      disabled={disabled}
       {...props}
       name={field.name}
       inputRef={field.ref}
