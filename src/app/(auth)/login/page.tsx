@@ -2,6 +2,7 @@
 
 import React from "react"
 import { AppConfig } from "@/config"
+import { zodResolver } from "@hookform/resolvers/zod"
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import LoadingButton from "@mui/lab/LoadingButton"
 import Avatar from "@mui/material/Avatar"
@@ -9,9 +10,10 @@ import Box from "@mui/material/Box"
 import Divider from "@mui/material/Divider"
 import Typography from "@mui/material/Typography"
 import { signIn } from "next-auth/react"
+import { FormProvider, useForm } from "react-hook-form"
 
 import { UserLoginSchema } from "@/lib/schema"
-import { FormProvider, TextField, useForm } from "@/components/ZodRHForm"
+import { RHFTextField } from "@/components/RHFControls"
 
 const Login = () => {
   const [isLoading, setIsLoading] = React.useState(false)
@@ -19,9 +21,12 @@ const Login = () => {
 
   // Credential Login
   function CredentialLogin() {
-    const form = useForm(UserLoginSchema, {
-      username: "",
-      password: "",
+    const form = useForm({
+      resolver: zodResolver(UserLoginSchema),
+      defaultValues: {
+        username: "",
+        password: "",
+      },
     })
 
     async function onSubmit(data: UserLoginSchema) {
@@ -35,7 +40,7 @@ const Login = () => {
     return (
       <Box component="form" onSubmit={form.handleSubmit(onSubmit)}>
         <FormProvider {...form}>
-          <TextField
+          <RHFTextField
             disabled={isLoading}
             margin="normal"
             fullWidth
@@ -45,7 +50,7 @@ const Login = () => {
             autoFocus
             size="small"
           />
-          <TextField
+          <RHFTextField
             disabled={isLoading}
             margin="normal"
             fullWidth
