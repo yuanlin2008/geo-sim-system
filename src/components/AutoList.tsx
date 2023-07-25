@@ -5,12 +5,11 @@ import ListItem from "@mui/material/ListItem"
 import ListItemButton from "@mui/material/ListItemButton"
 import ListItemIcon from "@mui/material/ListItemIcon"
 import ListItemText from "@mui/material/ListItemText"
-import Menu from "@mui/material/Menu"
-import MenuItem from "@mui/material/MenuItem"
 import Tooltip from "@mui/material/Tooltip"
-import Typography from "@mui/material/Typography"
 
 import Icons from "@/components/Icons"
+
+import { ContextMenu, useContextMenu } from "./ContextMenu"
 
 function AutoList<T>(props: {
   list: T[]
@@ -23,10 +22,7 @@ function AutoList<T>(props: {
   onAction: [icon: React.FC, text: string, on: (item: T) => void][]
 }) {
   // Menu Context.
-  const [menuContext, setMenuContext] = React.useState<{
-    anchor: HTMLElement
-    selected: T
-  } | null>(null)
+  const [menuContext, setMenuContext] = useContextMenu<T>()
 
   // 创建List item
   function createListItem(item: T) {
@@ -67,38 +63,18 @@ function AutoList<T>(props: {
     )
   }
 
-  // 创建Menu item
-  function createMenuItem([Icon, text, on]: [
-    icon: React.FC,
-    text: string,
-    on: (item: T) => void
-  ]) {
-    function handleClick() {
-      setMenuContext(null)
-      on(menuContext?.selected!)
-    }
-    return (
-      <MenuItem key={text} onClick={handleClick}>
-        <ListItemIcon>
-          <Icon />
-        </ListItemIcon>
-        <Typography>{text}</Typography>
-      </MenuItem>
-    )
-  }
-
   return (
     <>
       {/** 列表 */}
       <List dense>{props.list.map(createListItem)}</List>
       {/** 弹出菜单. */}
-      <Menu
-        open={!!menuContext}
-        anchorEl={menuContext?.anchor}
-        onClose={() => setMenuContext(null)}
-      >
-        {props.onAction.map(createMenuItem)}
-      </Menu>
+      <ContextMenu
+        context={menuContext}
+        onAction={props.onAction}
+        onClose={() => {
+          setMenuContext(null)
+        }}
+      />
     </>
   )
 }

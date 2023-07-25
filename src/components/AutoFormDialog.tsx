@@ -14,6 +14,17 @@ import { z } from "zod"
 
 import { FormProvider, TextField, useForm } from "@/components/ZodRHForm"
 
+export type AutoFormDialogProps<ST extends z.ZodTypeAny, T = z.infer<ST>> = {
+  isOpen: boolean
+  title: string
+  content?: string
+  schema: ST
+  defaultValues: T
+  names: Array<[keyof T, string]>
+  onCancel: () => void
+  onSubmit: (data: T) => Promise<null | string>
+}
+
 function AutoFormDialog<ST extends z.ZodTypeAny, T = z.infer<ST>>({
   isOpen,
   title,
@@ -23,16 +34,7 @@ function AutoFormDialog<ST extends z.ZodTypeAny, T = z.infer<ST>>({
   names,
   onCancel,
   onSubmit,
-}: {
-  isOpen: boolean
-  title: string
-  content?: string
-  schema: ST
-  defaultValues: T
-  names: Array<[keyof T, string]>
-  onCancel: () => void
-  onSubmit: (data: T) => Promise<null | string>
-}) {
+}: AutoFormDialogProps<ST>) {
   const form = useForm(schema, defaultValues)
   const [error, setError] = React.useState<string | null>(null)
   const [submitting, setSubmitting] = React.useState<boolean>(false)

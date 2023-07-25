@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Skeleton from "@mui/material/Skeleton"
@@ -10,6 +10,7 @@ import { MetaEnumInput, MetaEnumItemInput } from "@/lib/schema"
 import AlertDialog from "@/components/AlertDialog"
 import AutoFormDialog from "@/components/AutoFormDialog"
 import AutoList from "@/components/AutoList"
+import AutoTable from "@/components/AutoTable"
 import Icons from "@/components/Icons"
 import { MetaEnum, useMetaData } from "@/components/MetaData"
 
@@ -128,7 +129,70 @@ function EnumList(props: {
   )
 }
 
-function EnumItemTable(props: {}) {}
+const CreateEnumItemDefaults: MetaEnumItemInput = {
+  name: "",
+  desc: "",
+}
+
+const MetaEnumItemNames: Array<[keyof MetaEnumItemInput, string]> = [
+  ["name", "名称"],
+  ["desc", "描述"],
+]
+
+function CreateEnumItemDialog(props: { curEnum: MetaEnum }) {
+  const [isOpen, setOpen] = useState(false)
+  const { createEnumItem } = useMetaData()
+
+  async function handleSubmit(e: MetaEnumItemInput) {
+    const r = await createEnumItem(e, props.curEnum.id)
+    setOpen(false)
+    return r ? null : "Error"
+  }
+
+  return (
+    <>
+      <Button
+        variant="outlined"
+        startIcon={<Icons.New />}
+        onClick={() => {
+          setOpen(true)
+        }}
+      >
+        新建枚举项
+      </Button>
+      <AutoFormDialog
+        isOpen={isOpen}
+        title="创建枚举项"
+        schema={MetaEnumItemInput}
+        defaultValues={CreateEnumItemDefaults}
+        names={MetaEnumItemNames}
+        onCancel={() => setOpen(false)}
+        onSubmit={handleSubmit}
+      />
+    </>
+  )
+}
+
+function EnumItemTable(props: { curEnum: MetaEnum }) {
+  const { data } = useMetaData()
+  if (!data) return null
+  const itemList = data.metaEnumId2ItemMap.get(props.curEnum.id)
+  if (!itemList) return null
+
+  function handleEditAction(e: MetaEnum) {}
+  function handleDelAction(e: MetaEnum) {}
+  return (
+    <AutoTable
+      list={itemList}
+      keyName="id"
+      columns={MetaEnumItemNames}
+      onAction={[
+        [Icons.Edit, "编辑", handleEditAction],
+        [Icons.Delete, "删除", handleDelAction],
+      ]}
+    />
+  )
+}
 
 const Page = () => {
   const [curEnum, setCurEnum] = useState<MetaEnum | null>(null)
@@ -139,14 +203,29 @@ const Page = () => {
   }
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", width: "100%" }}>
       <Box sx={{ p: 2, width: 300 }}>
         <Stack spacing={2}>
           <CreateEnumDialog disabled={!data} />
           <EnumList curEnum={curEnum} onSelect={handleSelectEnum} />
         </Stack>
       </Box>
-      <Box sx={{ p: 2, flexGrow: 1, height: "100%" }}>hahahaha</Box>
+      <Box sx={{ p: 2, flexGrow: 1, height: "100%" }}>
+        {curEnum ? (
+          <Stack spacing={2}>
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignContent="flex-end"
+            >
+              <CreateEnumItemDialog curEnum={curEnum} />
+            </Box>
+            <EnumItemTable curEnum={curEnum} />
+          </Stack>
+        ) : (
+          <></>
+        )}
+      </Box>
     </Box>
   )
 }
