@@ -66,7 +66,7 @@ function RHFDialog<ST extends z.ZodTypeAny, T = z.infer<ST>>({
   return (
     <Dialog open={isOpen} fullWidth maxWidth="xs">
       <DialogTitle>{title}</DialogTitle>
-      <DialogContent>
+      <DialogContent dividers>
         {content && <DialogContentText>{content}</DialogContentText>}
         <FormProvider {...form}>
           <DisabledProvider disabled={submitting}>{children}</DisabledProvider>

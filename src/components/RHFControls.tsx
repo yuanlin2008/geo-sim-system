@@ -16,7 +16,7 @@ export function DisabledProvider({
   )
 }
 
-type RHFTextFieldProps<T extends FieldValues> = Omit<
+export type RHFTextFieldProps<T extends FieldValues> = Omit<
   TextFieldProps,
   "name" | "inputRef" | "onChange" | "value" | "onBlur" | "helperText" | "error"
 > &

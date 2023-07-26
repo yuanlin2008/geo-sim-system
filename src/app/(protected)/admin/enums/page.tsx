@@ -12,8 +12,16 @@ import AutoList from "@/components/AutoList"
 import AutoTable from "@/components/AutoTable"
 import Icons from "@/components/Icons"
 import { MetaEnum, MetaEnumItem, useMetaData } from "@/components/MetaData"
-import { RHFTextField } from "@/components/RHFControls"
+import { RHFTextField, RHFTextFieldProps } from "@/components/RHFControls"
 import RHFDialog from "@/components/RHFDialog"
+
+const TFProps = {
+  size: "small",
+  margin: "dense",
+  fullWidth: true,
+  autoComplete: "off",
+  variant: "filled",
+} as const
 
 function MetaEnumInputDialog(props: {
   isOpen: boolean
@@ -30,23 +38,8 @@ function MetaEnumInputDialog(props: {
       onCancel={props.onCancel}
       onSubmit={props.onSubmit}
     >
-      <RHFTextField
-        margin="dense"
-        label={"名称"}
-        name={"name"}
-        size="small"
-        fullWidth
-        autoComplete="off"
-      />
-      <RHFTextField
-        margin="dense"
-        label={"描述"}
-        name={"desc"}
-        size="small"
-        fullWidth
-        multiline
-        autoComplete="off"
-      />
+      <RHFTextField label={"名称"} name={"name"} {...TFProps} />
+      <RHFTextField label={"描述"} name={"desc"} {...TFProps} multiline />
     </RHFDialog>
   )
 }
@@ -66,30 +59,10 @@ function MetaEnumItemInputDialog(props: {
       onCancel={props.onCancel}
       onSubmit={props.onSubmit}
     >
-      <RHFTextField
-        margin="dense"
-        label={"名称"}
-        name={"name"}
-        size="small"
-        fullWidth
-        autoComplete="off"
-      />
-      <RHFTextField
-        margin="dense"
-        label={"描述"}
-        name={"desc"}
-        size="small"
-        fullWidth
-        multiline
-        autoComplete="off"
-      />
+      <RHFTextField label={"名称"} name={"name"} {...TFProps} />
+      <RHFTextField label={"描述"} name={"desc"} {...TFProps} multiline />
     </RHFDialog>
   )
-}
-
-const CreateEnumDefaults: MetaEnumInput = {
-  name: "",
-  desc: "",
 }
 
 function CreateEnumDialog(props: { disabled: boolean }) {
@@ -117,7 +90,7 @@ function CreateEnumDialog(props: { disabled: boolean }) {
       </Button>
       <MetaEnumInputDialog
         isOpen={isOpen}
-        defaultValues={CreateEnumDefaults}
+        defaultValues={{ name: "", desc: "" }}
         onCancel={() => setOpen(false)}
         onSubmit={handleSubmit}
       />
@@ -191,16 +164,6 @@ function EnumList(props: {
   )
 }
 
-const CreateEnumItemDefaults: MetaEnumItemInput = {
-  name: "",
-  desc: "",
-}
-
-const MetaEnumItemNames: Array<[keyof MetaEnumItemInput, string]> = [
-  ["name", "名称"],
-  ["desc", "描述"],
-]
-
 function CreateEnumItemDialog(props: { curEnum: MetaEnum }) {
   const [isOpen, setOpen] = useState(false)
   const { createEnumItem } = useMetaData()
@@ -224,7 +187,7 @@ function CreateEnumItemDialog(props: { curEnum: MetaEnum }) {
       </Button>
       <MetaEnumItemInputDialog
         isOpen={isOpen}
-        defaultValues={CreateEnumItemDefaults}
+        defaultValues={{ name: "", desc: "" }}
         onCancel={() => setOpen(false)}
         onSubmit={handleSubmit}
       />
@@ -262,7 +225,10 @@ function EnumItemTable(props: { curEnum: MetaEnum }) {
       <AutoTable
         list={itemList}
         keyName="id"
-        columns={MetaEnumItemNames}
+        columns={[
+          ["name", "名称"],
+          ["desc", "描述"],
+        ]}
         onAction={[
           [Icons.Edit, "编辑", handleEditAction],
           [Icons.Delete, "删除", handleDelAction],
