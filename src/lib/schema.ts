@@ -50,8 +50,8 @@ export const MetaFieldInput = z.object({
   name: NameSchema,
   desc: DescSchema,
   type: z.enum(["Int", "Float", "String", "Enum", "Ref"]),
-  typeEnumId: z.number(),
-  typeStructId: z.number(),
+  typeEnumId: z.number().nullable(),
+  typeStructId: z.number().nullable(),
   isArray: z.boolean(),
 }) satisfies z.ZodType<Prisma.MetaFieldUncheckedUpdateInput>
 export type MetaFieldInput = z.infer<typeof MetaFieldInput>

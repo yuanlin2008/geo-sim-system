@@ -15,7 +15,7 @@ import { ContextMenu, useContextMenu } from "./ContextMenu"
 function AutoTable<T>(props: {
   list: T[]
   keyName: keyof T
-  columns: Array<[keyof T, string]>
+  columns: Array<[string, keyof T | ((item: T) => any)]>
   onAction: [icon: React.FC, text: string, on: (item: T) => void][]
 }) {
   // Menu Context.
@@ -34,7 +34,11 @@ function AutoTable<T>(props: {
     return (
       <TableRow key={item[props.keyName] as string}>
         {props.columns.map((c) => (
-          <TableCell key={c[0] as string}>{item[c[0]] as string}</TableCell>
+          <TableCell key={c[0]}>
+            {c[1] instanceof Function
+              ? c[1](item)
+              : (item[c[1]] as any).toString()}
+          </TableCell>
         ))}
         <TableCell key={"op"} align="right">
           <IconButton onClick={handleClick}>
@@ -48,11 +52,11 @@ function AutoTable<T>(props: {
   return (
     <>
       <TableContainer component={Paper}>
-        <Table size="small" aria-label="simple table">
+        <Table stickyHeader size="small" aria-label="simple table">
           <TableHead>
             <TableRow>
               {props.columns.map((c) => (
-                <TableCell key={c[0] as string}>{c[1]}</TableCell>
+                <TableCell key={c[0] as string}>{c[0]}</TableCell>
               ))}
               <TableCell key={"op"} align="right"></TableCell>
             </TableRow>

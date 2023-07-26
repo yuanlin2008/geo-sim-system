@@ -122,7 +122,7 @@ model MetaField {
   typeEnumId   Int?
   typeStruct   MetaStruct?   @relation("MetaField.typeStruct", fields: [typeStructId], references: [id])
   typeStructId Int?
-  isArray      Boolean?
+  isArray      Boolean
   /// 此MetaField的所有DataField.
   dataFields   DataField[]   @relation("DataField.meta")
 }
@@ -151,13 +151,13 @@ model DataField {
   owner       DataStruct    @relation("DataStruct.dataFields", fields: [ownerId], references: [id])
   ownerId     Int
   // Values.
-  valueInt    Int?
-  valueFloat  Float?
-  valueString String?
+  valueInt    Int
+  valueFloat  Float
+  valueString String
   valueEnum   MetaEnumItem? @relation("DataField.enumValue", fields: [valueEnumId], references: [id])
   valueEnumId Int?
   valueRef    DataStruct?   @relation("DataField.refValue", fields: [valueRefId], references: [id])
   valueRefId  Int?
   // Array.
-  arrayId     Int?
+  arrayId     Int
 }

@@ -226,8 +226,8 @@ function EnumItemTable(props: { curEnum: MetaEnum }) {
         list={itemList}
         keyName="id"
         columns={[
-          ["name", "名称"],
-          ["desc", "描述"],
+          ["名称", "name"],
+          ["描述", "desc"],
         ]}
         onAction={[
           [Icons.Edit, "编辑", handleEditAction],
