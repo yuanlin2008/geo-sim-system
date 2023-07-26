@@ -18,8 +18,7 @@ export async function GET() {
   })
 }
 
-export async function POST(req: NextRequest) {
-  const op = MetaDataOperation.parse(await req.json())
+async function handler(op: MetaDataOperation) {
   switch (op.type) {
     case "createEnumItem": {
       const r = await prisma.metaEnumItem.create({
@@ -97,5 +96,14 @@ export async function POST(req: NextRequest) {
       })
       return new NextResponse()
     }
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const op = MetaDataOperation.parse(await req.json())
+  try {
+    return handler(op)
+  } catch (e) {
+    return new NextResponse(null, { status: 500 })
   }
 }
