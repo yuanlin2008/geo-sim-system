@@ -53,9 +53,13 @@ async function handler(op: MetaDataOperation) {
       return new NextResponse()
     }
     case "deleteEnum": {
-      await prisma.metaEnum.delete({
+      const deleteItems = prisma.metaEnumItem.deleteMany({
+        where: { ownerId: op.id },
+      })
+      const deleteEnum = prisma.metaEnum.delete({
         where: { id: op.id },
       })
+      await prisma.$transaction([deleteItems, deleteEnum])
       return new NextResponse()
     }
     case "createField": {
@@ -91,9 +95,13 @@ async function handler(op: MetaDataOperation) {
       return new NextResponse()
     }
     case "deleteStruct": {
-      await prisma.metaStruct.delete({
+      const deleteFields = prisma.metaField.deleteMany({
+        where: { ownerId: op.id },
+      })
+      const deleteStruct = prisma.metaStruct.delete({
         where: { id: op.id },
       })
+      await prisma.$transaction([deleteFields, deleteStruct])
       return new NextResponse()
     }
   }

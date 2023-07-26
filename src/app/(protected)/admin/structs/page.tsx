@@ -327,7 +327,7 @@ function FieldTable(props: { curStruct: MetaStruct }) {
               return i.type
             },
           ],
-          ["数组", (i) => (i.isArray ? "" : "")],
+          ["数组", (i) => (i.isArray ? "是" : "")],
         ]}
         onAction={[
           [Icons.Edit, "编辑", handleEditAction],

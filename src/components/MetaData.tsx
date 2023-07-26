@@ -200,6 +200,7 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
       const r = await post({ type: "deleteEnum", id })
       if (!r.ok) return false
       data.metaEnums = data.metaEnums.filter((e) => e.id != id)
+      data.metaEnumItems = data.metaEnumItems.filter((e) => e.ownerId != id)
       resetData(data)
       return true
     },
@@ -272,6 +273,7 @@ export function MetaDataProvider({ children }: { children: React.ReactNode }) {
       const r = await post({ type: "deleteStruct", id })
       if (!r.ok) return false
       data.metaStructs = data.metaStructs.filter((e) => e.id != id)
+      data.metaFields = data.metaFields.filter((e) => e.ownerId != id)
       resetData(data)
       return true
     },

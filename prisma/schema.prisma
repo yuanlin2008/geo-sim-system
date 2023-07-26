@@ -118,9 +118,9 @@ model MetaField {
   ownerId      Int
   /// Type
   type         MetaFieldType
-  typeEnum     MetaEnum?     @relation("MetaField.typeEnum", fields: [typeEnumId], references: [id])
+  typeEnum     MetaEnum?     @relation("MetaField.typeEnum", fields: [typeEnumId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   typeEnumId   Int?
-  typeStruct   MetaStruct?   @relation("MetaField.typeStruct", fields: [typeStructId], references: [id])
+  typeStruct   MetaStruct?   @relation("MetaField.typeStruct", fields: [typeStructId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   typeStructId Int?
   isArray      Boolean
   /// 此MetaField的所有DataField.
@@ -154,9 +154,9 @@ model DataField {
   valueInt    Int
   valueFloat  Float
   valueString String
-  valueEnum   MetaEnumItem? @relation("DataField.enumValue", fields: [valueEnumId], references: [id])
+  valueEnum   MetaEnumItem? @relation("DataField.enumValue", fields: [valueEnumId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   valueEnumId Int?
-  valueRef    DataStruct?   @relation("DataField.refValue", fields: [valueRefId], references: [id])
+  valueRef    DataStruct?   @relation("DataField.refValue", fields: [valueRefId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   valueRefId  Int?
   // Array.
   arrayId     Int
