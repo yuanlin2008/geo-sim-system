@@ -12,7 +12,7 @@ import AutoList from "@/components/AutoList"
 import AutoTable from "@/components/AutoTable"
 import Icons from "@/components/Icons"
 import { MetaEnum, MetaEnumItem, useMetaData } from "@/components/MetaData"
-import { RHFTextField, RHFTextFieldProps } from "@/components/RHFControls"
+import { RHFTextField } from "@/components/RHFControls"
 import RHFDialog from "@/components/RHFDialog"
 
 const TFProps = {
