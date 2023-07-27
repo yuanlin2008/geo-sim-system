@@ -5,11 +5,9 @@ import AdminNavBar from "@/components/AdminNavBar"
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Box sx={{ flexGrow: 1, height: "auto" }}>
-      <Box sx={{ display: "flex" }}>
-        <AdminNavBar />
-        {children}
-      </Box>
+    <Box sx={{ flexGrow: 1, height: "auto", display: "flex" }}>
+      <AdminNavBar />
+      {children}
     </Box>
   )
 }

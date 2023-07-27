@@ -26,7 +26,7 @@ const NavBar = () => {
         flexShrink: 0,
       }}
     >
-      <List sx={{ width: 56 }}>
+      <List sx={{ width: 56, height: "100%" }}>
         {NavLinks.map(({ text, icon: Icon, href }) => (
           <ListItem key={href} disablePadding>
             <Tooltip title={text} placement="right">
